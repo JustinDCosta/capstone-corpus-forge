@@ -2,7 +2,17 @@
 
 #### The Team members
 
-* Names, epita email addresses, and GitHub usernames of all team members.
+Name: Justin D'COSTA
+Epita Email: justin.d-costa@epita.fr
+Github Username: JustinDCosta
+
+Name: Krishna BANSAL
+Epita Email: krishna.bansal@epita.fr
+Github Username: 
+
+Name: Piotr MOCZULSKI
+Epita Email: piotr.moczulski@epita.fr
+Github Username: 
 
 ---
 
