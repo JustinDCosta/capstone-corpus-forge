@@ -8,7 +8,7 @@ Github Username: JustinDCosta
 
 Name: Krishna BANSAL
 Epita Email: krishna.bansal@epita.fr
-Github Username: 
+Github Username: Krishnabansal2006
 
 Name: Piotr MOCZULSKI
 Epita Email: piotr.moczulski@epita.fr
