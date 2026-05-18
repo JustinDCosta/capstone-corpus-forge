@@ -36,3 +36,18 @@
 - **Hook Version**: 1.02
 - **Date**: 18-05-2026 09:29
 - **Prompt**: add the requirements to txt accordingly(check main.py)
+### **New Interaction**
+- **Agent Version**: 2.3
+- **Date**: 18-05-2026 09:29
+- **User**: justin.d-costa@epita.fr
+- **Prompt**: add the requirements to txt accordingly(check main.py)
+- **CoPilot Mode**: Ask
+- **CoPilot Model**: GPT-5.2-Codex
+- **Socratic Mode**: ON
+- **Changes Made**: No changes.
+- **Context and Reasons for Changes**: Noted unexpected edits to main.py; requested confirmation before updating requirements.
+
+### **New Interaction**
+- **Hook Version**: 1.02
+- **Date**: 18-05-2026 09:31
+- **Prompt**: read and infer, and then make the requirememts.txt

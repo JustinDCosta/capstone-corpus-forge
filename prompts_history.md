@@ -7,3 +7,6 @@
 ### 18-05-2026 09:29
 - **Prompt**: add the requirements to txt accordingly(check main.py)
 
+### 18-05-2026 09:31
+- **Prompt**: read and infer, and then make the requirememts.txt
+
