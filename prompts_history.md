@@ -1,12 +1,3 @@
-### 18-05-2026 01:38
-- **Prompt**: I am building a FastAPI backend in Python. Create a basic main.py file with CORS middleware enabled and a simple /ping health-check endpoint. I need the code to start the Uvicorn server locally. Do not add any database or AI logic yet.
-
-### 18-05-2026 01:41
-- **Prompt**: 1. Put main.py in the repo root. 2. Allow all CORS origins with * for now since we are in local development. 3. Use the if __name__ == "__main__": uvicorn.run(...) method at the bottom of the file so I can just run it with python main.py.
-
-### 18-05-2026 09:29
-- **Prompt**: add the requirements to txt accordingly(check main.py)
-
-### 18-05-2026 09:31
-- **Prompt**: read and infer, and then make the requirememts.txt
+### 18-05-2026 10:33
+- **Prompt**: You are a Senior Application Security Engineer and Staff Python Architect auditing a new local RAG pipeline.  Context: I have built a backend using FastAPI, PyMuPDF, ChromaDB (local persistence), and the Groq API (Llama-3.1-8b-instant). It handles user file uploads (PDF, TXT, MD, PY, JS), chunks the text, stores it locally, and allows users to query it or generate JSON artifacts (quizzes, flashcards, code reviews).  Task: Perform a brutal, comprehensive security and reliability audit of my main.py and requirements.txt. Do not compliment my code; only look for vulnerabilities, memory leaks, or scaling issues.  Specifically analyze these attack vectors and failure states:  File Handling & Path Traversal: Are there any risks with how I am using tempfile? Could a maliciously crafted filename cause a directory traversal attack or overwrite system files? Are temp files guaranteed to be deleted even if extraction crashes?  Denial of Service (DoS) & Resource Exhaustion: Is the /upload/ endpoint vulnerable to massive file uploads (e.g., a 5GB PDF or a "zip bomb" equivalent)? Will ChromaDB or PyMuPDF choke and crash the server?  Prompt Injection & LLM Security: In the /chat/ and /generate/ endpoints, is it possible for a user's query or filename to inject malicious instructions that break the system prompt or alter the JSON output schema?  CORS & API Exposure: I am currently using allow_origins=["*"]. What is the specific risk here, and what exactly should I change it to for a production-ready local app?  Concurrency & Threading: Are there any async/await blocking issues in FastAPI, or thread-safety issues with local ChromaDB?  Output: For every vulnerability you find, provide a concise explanation of the exploit and the exact Python code snippet required to fix it.
 
