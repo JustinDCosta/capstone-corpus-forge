@@ -18,6 +18,9 @@
 ### 20-05-2026 20:44
 - **Prompt**: ok, its in root now do as you always have
 
-### 20-05-2026 20:44
+### 20-05-2026 20:45
 - **Prompt**: why are you adding two interaction of one promt
+
+### 20-05-2026 20:45
+- **Prompt**: ok, lets go back too.  I have a FastAPI backend for a RAG application. Can you explain what security risks exist when handling file uploads in Python? Don't write any code yet, just explain the concepts.
 
