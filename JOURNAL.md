@@ -90,6 +90,13 @@
 
 ### **New Interaction**
 - **Hook Version**: 1.02
+- **Date**: 20-05-2026 21:05
+- **Prompt**: Implement just the sidebar document upload and document list sections. Connect them to the FastAPI backend. Leave all tabs as TODOs still.
+- **Changes Made**: Implemented the Streamlit sidebar upload control and document list refresh flow against the FastAPI backend; kept all main tabs as TODO placeholders.
+- **Context and Reasons for Changes**: The sidebar now fetches documents from `GET /documents/` and uploads files to `POST /upload/` so document management is functional while the feature tabs remain unimplemented.
+
+### **New Interaction**
+- **Hook Version**: 1.02
 - **Date**: 20-05-2026 20:48
 - **Prompt**: Yes, explain how these risks apply specifically to my FastAPI upload endpoint and the RAG ingestion flow. Still no code, just explain.
 
