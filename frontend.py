@@ -130,17 +130,55 @@ def render_chat_tab() -> None:
 
 
 def render_quiz_tab() -> None:
-    """Render the quiz generation tab scaffold."""
+    """Render the quiz generation tab and request quiz JSON from the backend."""
     st.header("Generate Quiz")
-    st.write("TODO: Build the quiz generation form for POST /generate/quiz/.")
-    st.write("TODO: Add filename selection and quiz display placeholders.")
+
+    filename = st.session_state.get("selected_document")
+    if not filename:
+        st.info("Select a document in the sidebar to enable quiz generation.")
+        return
+
+    st.write(f"Generating quiz for: **{filename}**")
+    if st.button("Generate Quiz", use_container_width=True):
+        with st.spinner("Requesting quiz from backend..."):
+            try:
+                resp = httpx.post(
+                    f"{BACKEND_URL}/generate/quiz/",
+                    data={"filename": filename},
+                    timeout=120.0,
+                )
+                resp.raise_for_status()
+                quiz_obj = resp.json()
+                st.subheader("Quiz JSON")
+                st.json(quiz_obj)
+            except Exception as exc:
+                st.error(f"Quiz generation failed: {exc}")
 
 
 def render_flashcards_tab() -> None:
-    """Render the flashcards generation tab scaffold."""
+    """Render the flashcards generation tab and request flashcards JSON from the backend."""
     st.header("Generate Flashcards")
-    st.write("TODO: Build the flashcards form for POST /generate/flashcards/.")
-    st.write("TODO: Add filename selection and flashcard display placeholders.")
+
+    filename = st.session_state.get("selected_document")
+    if not filename:
+        st.info("Select a document in the sidebar to enable flashcard generation.")
+        return
+
+    st.write(f"Generating flashcards for: **{filename}**")
+    if st.button("Generate Flashcards", use_container_width=True):
+        with st.spinner("Requesting flashcards from backend..."):
+            try:
+                resp = httpx.post(
+                    f"{BACKEND_URL}/generate/flashcards/",
+                    data={"filename": filename},
+                    timeout=120.0,
+                )
+                resp.raise_for_status()
+                cards_obj = resp.json()
+                st.subheader("Flashcards JSON")
+                st.json(cards_obj)
+            except Exception as exc:
+                st.error(f"Flashcards generation failed: {exc}")
 
 
 def render_code_review_tab() -> None:

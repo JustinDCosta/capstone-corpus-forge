@@ -57,6 +57,9 @@
 ### 20-05-2026 21:10
 - **Prompt**: Implement just the Chat tab. Connect it to POST /chat/ with query, audience_level and tone parameters. Show the response and the token metrics. Leave all other tabs as TODOs.
 
+### 20-05-2026 21:20
+- **Prompt**: Implement the Quiz tab and Flashcards tab. Connect them to POST /generate/quiz/ and POST /generate/flashcards/. Use the selected document from session state. Leave Code Review as TODO.
+
 ### 20-05-2026 21:26
 - **Prompt**: Implement the Quiz tab and Flashcards tab. Connect them to POST /generate/quiz/ and POST /generate/flashcards/. Use the selected document from session state. Leave Code Review as TODO.
 

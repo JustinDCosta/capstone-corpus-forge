@@ -104,6 +104,13 @@
 
 ### **New Interaction**
 - **Hook Version**: 1.02
+- **Date**: 20-05-2026 21:20
+- **Prompt**: Implement the Quiz tab and Flashcards tab. Connect them to POST /generate/quiz/ and POST /generate/flashcards/. Use the selected document from session state. Leave Code Review as TODO.
+- **Changes Made**: Added `Generate Quiz` and `Generate Flashcards` tabs in `frontend.py`. Each tab posts the currently-selected filename (from the sidebar) to the corresponding backend endpoint and displays the returned JSON. Kept `Code Review` tab as TODO.
+- **Context and Reasons for Changes**: Provide immediate client-side access to quiz and flashcard generation using the server endpoints and the selected document, enabling manual testing while other features remain unimplemented.
+
+### **New Interaction**
+- **Hook Version**: 1.02
 - **Date**: 20-05-2026 20:48
 - **Prompt**: Yes, explain how these risks apply specifically to my FastAPI upload endpoint and the RAG ingestion flow. Still no code, just explain.
 
