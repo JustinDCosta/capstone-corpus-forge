@@ -67,3 +67,13 @@
 - **Hook Version**: 1.02
 - **Date**: 20-05-2026 20:43
 - **Prompt**: ok, its in root now do as you always have
+
+### **New Interaction**
+- **Hook Version**: 1.02
+- **Date**: 20-05-2026 20:44
+- **Prompt**: ok, its in root now do as you always have
+
+### **New Interaction**
+- **Hook Version**: 1.02
+- **Date**: 20-05-2026 20:44
+- **Prompt**: why are you adding two interaction of one promt
