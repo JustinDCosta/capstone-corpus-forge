@@ -69,3 +69,6 @@
 ### 20-05-2026 21:30
 - **Prompt**: Implement the Code Review tab. Connect it to POST /generate/code-review/. Only show it for .py and .js files. Display summary, bugs, optimizations, and security concerns sections.
 
+### 20-05-2026 21:33
+- **Prompt**: Add a DELETE /documents/{filename} endpoint to app/routes.py that removes all chunks for that filename from ChromaDB. Then add a delete button next to each document in the frontend sidebar.
+
