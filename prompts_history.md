@@ -24,3 +24,6 @@
 ### 20-05-2026 20:45
 - **Prompt**: ok, lets go back too.  I have a FastAPI backend for a RAG application. Can you explain what security risks exist when handling file uploads in Python? Don't write any code yet, just explain the concepts.
 
+### 20-05-2026 20:48
+- **Prompt**: Yes, explain how these risks apply specifically to my FastAPI upload endpoint and the RAG ingestion flow. Still no code, just explain.
+
