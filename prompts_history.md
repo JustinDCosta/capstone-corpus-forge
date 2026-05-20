@@ -51,3 +51,6 @@
 ### 20-05-2026 21:04
 - **Prompt**: Implement just the sidebar document upload and document list sections. Connect them to the FastAPI backend. Leave all tabs as TODOs still.
 
+### 20-05-2026 21:09
+- **Prompt**: Implement just the Chat tab. Connect it to POST /chat/ with query, audience_level and tone parameters. Show the response and the token metrics. Leave all other tabs as TODOs.
+
