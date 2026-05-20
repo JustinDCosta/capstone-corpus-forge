@@ -177,3 +177,8 @@
 - **Hook Version**: 1.02
 - **Date**: 20-05-2026 21:33
 - **Prompt**: Add a DELETE /documents/{filename} endpoint to app/routes.py that removes all chunks for that filename from ChromaDB. Then add a delete button next to each document in the frontend sidebar.
+
+### **New Interaction**
+- **Hook Version**: 1.02
+- **Date**: 20-05-2026 21:41
+- **Prompt**: Add a /metrics/ GET endpoint to app/routes.py. Create a simple in-memory counter dict that tracks total_requests and total_tokens_used. Increment total_requests and total_tokens_used in the /chat/ and /generate/quiz/ and /generate/flashcards/ and /generate/code-review/ endpoints. The /metrics/ endpoint should return these two values.
