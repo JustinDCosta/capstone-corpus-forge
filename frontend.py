@@ -17,6 +17,21 @@ def fetch_documents() -> list[str]:
         return []
 
 
+def fetch_metrics() -> dict:
+    """Fetch global backend metrics."""
+    try:
+        response = httpx.get(f"{BACKEND_URL}/metrics/", timeout=10.0)
+        response.raise_for_status()
+        payload = response.json()
+        return {
+            "total_requests": payload.get("total_requests", 0),
+            "total_tokens_used": payload.get("total_tokens_used", 0),
+        }
+    except Exception as exc:
+        st.sidebar.error(f"Failed to load metrics: {exc}")
+        return {"total_requests": 0, "total_tokens_used": 0}
+
+
 def upload_document(uploaded_file) -> None:
     """Upload a file to the FastAPI backend."""
     try:
@@ -89,13 +104,30 @@ def render_sidebar() -> None:
     else:
         st.sidebar.info("No documents found yet.")
 
+    st.sidebar.divider()
+    st.sidebar.subheader("Metrics")
+
+    if "metrics" not in st.session_state:
+        st.session_state["metrics"] = fetch_metrics()
+
+    if st.sidebar.button("Refresh metrics", use_container_width=True):
+        st.session_state["metrics"] = fetch_metrics()
+
+    metrics = st.session_state.get(
+        "metrics", {"total_requests": 0, "total_tokens_used": 0}
+    )
+    st.sidebar.write(f"Total requests: **{metrics.get('total_requests', 0)}**")
+    st.sidebar.write(f"Total tokens used: **{metrics.get('total_tokens_used', 0)}**")
+
 
 def render_upload_tab() -> None:
     """Render the upload tab."""
     st.header("Upload Documents")
     st.info("Use the sidebar on the left to upload and manage documents.")
     st.write("Supported formats: .txt, .md, .pdf, .py, .js")
-    st.write("After uploading, select a document from the sidebar to use it in Chat, Quiz, Flashcards, or Code Review.")
+    st.write(
+        "After uploading, select a document from the sidebar to use it in Chat, Quiz, Flashcards, or Code Review."
+    )
 
 
 def render_chat_tab() -> None:
@@ -137,6 +169,7 @@ def render_chat_tab() -> None:
             )
             response.raise_for_status()
             payload = response.json()
+            st.session_state["metrics"] = fetch_metrics()
 
             st.subheader("Response")
             st.write(payload.get("response", "No response returned."))
@@ -168,6 +201,7 @@ def render_quiz_tab() -> None:
                 )
                 resp.raise_for_status()
                 quiz_obj = resp.json()
+                st.session_state["metrics"] = fetch_metrics()
                 st.subheader("Quiz JSON")
                 st.json(quiz_obj)
             except Exception as exc:
@@ -194,6 +228,7 @@ def render_flashcards_tab() -> None:
                 )
                 resp.raise_for_status()
                 cards_obj = resp.json()
+                st.session_state["metrics"] = fetch_metrics()
                 st.subheader("Flashcards JSON")
                 st.json(cards_obj)
             except Exception as exc:
@@ -227,6 +262,7 @@ def render_code_review_tab() -> None:
                 )
                 resp.raise_for_status()
                 body = resp.json()
+                st.session_state["metrics"] = fetch_metrics()
 
                 review = body.get("review") or {}
 

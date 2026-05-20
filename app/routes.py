@@ -8,10 +8,23 @@ from .utils import extract_text_from_file, chunk_text, get_document_context
 
 router = APIRouter()
 
+metrics_counters = {
+    "total_requests": 0,
+    "total_tokens_used": 0,
+}
+
 
 @router.get("/ping")
 def ping():
     return {"status": "Corpus Forge Engine is online and ready."}
+
+
+@router.get("/metrics/")
+def get_metrics():
+    return {
+        "total_requests": metrics_counters["total_requests"],
+        "total_tokens_used": metrics_counters["total_tokens_used"],
+    }
 
 
 @router.post("/upload/")
@@ -109,6 +122,9 @@ async def chat_with_corpus(
             temperature=0.2,  # Keep it low so it relies on the docs, not its imagination
         )
 
+        metrics_counters["total_requests"] += 1
+        metrics_counters["total_tokens_used"] += chat_completion.usage.total_tokens
+
         # We return metrics here for observability (good to show during the demo)
         return {
             "response": chat_completion.choices[0].message.content,
@@ -185,6 +201,9 @@ async def generate_quiz(filename: str = Form(...)):
             response_format={"type": "json_object"},
         )
 
+        metrics_counters["total_requests"] += 1
+        metrics_counters["total_tokens_used"] += chat_completion.usage.total_tokens
+
         return json.loads(chat_completion.choices[0].message.content)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -222,6 +241,9 @@ async def generate_flashcards(filename: str = Form(...)):
             temperature=0.3,
             response_format={"type": "json_object"},
         )
+
+        metrics_counters["total_requests"] += 1
+        metrics_counters["total_tokens_used"] += chat_completion.usage.total_tokens
 
         return json.loads(chat_completion.choices[0].message.content)
     except Exception as e:
@@ -262,6 +284,9 @@ async def generate_code_review(filename: str = Form(...)):
             temperature=0.1,  # Keep it ultra-low so the code review is strictly analytical
             response_format={"type": "json_object"},
         )
+
+        metrics_counters["total_requests"] += 1
+        metrics_counters["total_tokens_used"] += chat_completion.usage.total_tokens
 
         return json.loads(chat_completion.choices[0].message.content)
     except Exception as e:
