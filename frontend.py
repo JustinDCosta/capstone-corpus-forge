@@ -91,9 +91,11 @@ def render_sidebar() -> None:
 
 
 def render_upload_tab() -> None:
-    """Render the upload tab scaffold."""
-    st.header("Upload")
-    st.write("TODO: Build the upload workflow for POST /upload/.")
+    """Render the upload tab."""
+    st.header("Upload Documents")
+    st.info("Use the sidebar on the left to upload and manage documents.")
+    st.write("Supported formats: .txt, .md, .pdf, .py, .js")
+    st.write("After uploading, select a document from the sidebar to use it in Chat, Quiz, Flashcards, or Code Review.")
 
 
 def render_chat_tab() -> None:
