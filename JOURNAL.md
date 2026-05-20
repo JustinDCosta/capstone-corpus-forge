@@ -111,6 +111,13 @@
 
 ### **New Interaction**
 - **Hook Version**: 1.02
+- **Date**: 20-05-2026 21:28
+- **Prompt**: Implement the Code Review tab. Connect it to POST /generate/code-review/. Only show it for .py and .js files. Display summary, bugs, optimizations, and security concerns sections.
+- **Changes Made**: Implemented `Code Review` tab which POSTs the selected filename to `POST /generate/code-review/` and displays the returned `review` object with `summary`, `bugs`, `optimizations`, and `security_concerns` fields. Tab is only enabled when a `.py` or `.js` document is selected.
+- **Context and Reasons for Changes**: Provide code-review capability for code files ingested into the RAG system; keeps other tabs and functionality unchanged.
+
+### **New Interaction**
+- **Hook Version**: 1.02
 - **Date**: 20-05-2026 20:48
 - **Prompt**: Yes, explain how these risks apply specifically to my FastAPI upload endpoint and the RAG ingestion flow. Still no code, just explain.
 

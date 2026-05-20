@@ -182,10 +182,64 @@ def render_flashcards_tab() -> None:
 
 
 def render_code_review_tab() -> None:
-    """Render the code review tab scaffold."""
+    """Render the code review tab and request a structured review from the backend.
+
+    Only available for `.py` and `.js` documents.
+    """
     st.header("Generate Code Review")
-    st.write("TODO: Build the code review form for POST /generate/code-review/.")
-    st.write("TODO: Add filename selection and review display placeholders.")
+
+    filename = st.session_state.get("selected_document")
+    if not filename:
+        st.info("Select a document in the sidebar to enable code review.")
+        return
+
+    if not filename.lower().endswith((".py", ".js")):
+        st.info("Code review is only available for .py and .js files.")
+        return
+
+    st.write(f"Generating code review for: **{filename}**")
+    if st.button("Generate Code Review", use_container_width=True):
+        with st.spinner("Requesting code review from backend..."):
+            try:
+                resp = httpx.post(
+                    f"{BACKEND_URL}/generate/code-review/",
+                    data={"filename": filename},
+                    timeout=120.0,
+                )
+                resp.raise_for_status()
+                body = resp.json()
+
+                review = body.get("review") or {}
+
+                st.subheader("Summary")
+                st.write(review.get("summary", "No summary returned."))
+
+                st.subheader("Bugs")
+                bugs = review.get("bugs", [])
+                if bugs:
+                    for b in bugs:
+                        st.write(f"- {b}")
+                else:
+                    st.write("No bugs identified.")
+
+                st.subheader("Optimizations")
+                opts = review.get("optimizations", [])
+                if opts:
+                    for o in opts:
+                        st.write(f"- {o}")
+                else:
+                    st.write("No optimizations suggested.")
+
+                st.subheader("Security Concerns")
+                secs = review.get("security_concerns", [])
+                if secs:
+                    for s in secs:
+                        st.write(f"- {s}")
+                else:
+                    st.write("No security concerns identified.")
+
+            except Exception as exc:
+                st.error(f"Code review request failed: {exc}")
 
 
 def main() -> None:
