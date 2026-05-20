@@ -8,3 +8,6 @@ Automatically captured prompt log. Entries are appended in chronological order (
 ### 20-05-2026 20:39
 - **Prompt**: activite and add journal and promt_history too
 
+### 20-05-2026 20:40
+- **Prompt**: no, the files are in records now in there do it
+
