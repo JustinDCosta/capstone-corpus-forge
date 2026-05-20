@@ -102,3 +102,8 @@
 - **Hook Version**: 1.02
 - **Date**: 20-05-2026 21:00
 - **Prompt**: How does Streamlit communicate with a FastAPI backend?
+
+### **New Interaction**
+- **Hook Version**: 1.02
+- **Date**: 20-05-2026 21:02
+- **Prompt**: I need to build a Streamlit frontend for my FastAPI RAG backend. The backend runs on http://127.0.0.1:8000 and has these endpoints: - POST /upload/ — file upload - GET /documents/ — list documents   - POST /chat/ — RAG chat with query, audience_level, tone params - POST /generate/quiz/ — generate quiz for a filename - POST /generate/flashcards/ — generate flashcards for a filename - POST /generate/code-review/ — code review for a filename  Create a frontend.py with stubs and TODO comments for each section. Use a sidebar for document management and tabs for the main features. Do not implement the logic yet, just the structure.
