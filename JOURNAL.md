@@ -97,3 +97,8 @@
 - **Hook Version**: 1.02
 - **Date**: 20-05-2026 20:49
 - **Prompt**: Yes, show me just the file size check pattern for FastAPI. One small code snippet only.
+
+### **New Interaction**
+- **Hook Version**: 1.02
+- **Date**: 20-05-2026 21:00
+- **Prompt**: How does Streamlit communicate with a FastAPI backend?
