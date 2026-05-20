@@ -92,3 +92,8 @@
 - **Hook Version**: 1.02
 - **Date**: 20-05-2026 20:48
 - **Prompt**: Looking at my upload endpoint, which specific part is most risky right now? Show me just that one issue and how to fix it. Start with file size limits since that is the easiest denial of service risk.
+
+### **New Interaction**
+- **Hook Version**: 1.02
+- **Date**: 20-05-2026 20:49
+- **Prompt**: Yes, show me just the file size check pattern for FastAPI. One small code snippet only.
