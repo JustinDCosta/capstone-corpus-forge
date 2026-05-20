@@ -68,7 +68,24 @@ def render_sidebar() -> None:
         st.sidebar.selectbox("Available documents", documents, key="selected_document")
         st.sidebar.write("Current index:")
         for document_name in documents:
-            st.sidebar.write(f"- {document_name}")
+            cols = st.sidebar.columns([0.78, 0.22])
+            cols[0].write(document_name)
+            # Unique key per document to avoid collisions
+            btn_key = f"delete_{document_name}"
+            if cols[1].button("Delete", key=btn_key, use_container_width=True):
+                try:
+                    resp = httpx.delete(
+                        f"{BACKEND_URL}/documents/{document_name}", timeout=30.0
+                    )
+                    resp.raise_for_status()
+                    st.sidebar.success(resp.json().get("message", "Deleted."))
+                    # Refresh local document list
+                    st.session_state["documents"] = fetch_documents()
+                    # Clear selection if it was the deleted file
+                    if st.session_state.get("selected_document") == document_name:
+                        st.session_state["selected_document"] = None
+                except Exception as exc:
+                    st.sidebar.error(f"Delete failed: {exc}")
     else:
         st.sidebar.info("No documents found yet.")
 

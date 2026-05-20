@@ -118,6 +118,13 @@
 
 ### **New Interaction**
 - **Hook Version**: 1.02
+- **Date**: 20-05-2026 21:40
+- **Prompt**: Add a DELETE /documents/{filename} endpoint to app/routes.py that removes all chunks for that filename from ChromaDB. Then add a delete button next to each document in the frontend sidebar.
+- **Changes Made**: Added `DELETE /documents/{filename}` to `app/routes.py` which deletes all chunks matching the filename from the ChromaDB collection. Updated `frontend.py` sidebar to show a `Delete` button beside each document which calls the DELETE endpoint and refreshes the document list.
+- **Context and Reasons for Changes**: Allow users to remove documents from the vector DB and keep frontend in sync; necessary for managing stored corpora during development and demos.
+
+### **New Interaction**
+- **Hook Version**: 1.02
 - **Date**: 20-05-2026 20:48
 - **Prompt**: Yes, explain how these risks apply specifically to my FastAPI upload endpoint and the RAG ingestion flow. Still no code, just explain.
 

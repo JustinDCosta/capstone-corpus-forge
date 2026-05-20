@@ -132,6 +132,24 @@ async def list_documents():
     return {"documents": unique_files}
 
 
+@router.delete("/documents/{filename}")
+async def delete_document(filename: str):
+    """
+    Delete all chunks for a given filename from the ChromaDB collection.
+    """
+    try:
+        existing = collection.get(where={"filename": filename})
+        if not existing.get("ids"):
+            raise HTTPException(status_code=404, detail=f"No data found for {filename}")
+
+        collection.delete(where={"filename": filename})
+        return {"message": f"Deleted all chunks for {filename}"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.post("/generate/quiz/")
 async def generate_quiz(filename: str = Form(...)):
     """
