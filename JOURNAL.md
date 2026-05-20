@@ -132,6 +132,13 @@
 
 ### **New Interaction**
 - **Hook Version**: 1.02
+- **Date**: 20-05-2026 21:48
+- **Prompt**: Add a metrics panel to the frontend sidebar that fetches GET /metrics/ and displays total requests and total tokens used. Add a refresh button for it.
+- **Changes Made**: Added a sidebar metrics panel in `frontend.py` with `fetch_metrics()` calling `GET /metrics/`, a `Refresh metrics` button, and display fields for `total_requests` and `total_tokens_used`.
+- **Context and Reasons for Changes**: Exposes backend usage counters directly in the UI for quick visibility during demo/testing workflows.
+
+### **New Interaction**
+- **Hook Version**: 1.02
 - **Date**: 20-05-2026 20:48
 - **Prompt**: Yes, explain how these risks apply specifically to my FastAPI upload endpoint and the RAG ingestion flow. Still no code, just explain.
 
@@ -194,3 +201,8 @@
 - **Hook Version**: 1.02
 - **Date**: 20-05-2026 21:43
 - **Prompt**: Add a metrics panel to the frontend sidebar that fetches GET /metrics/ and displays total requests and total tokens used. Add a refresh button for it.
+
+### **New Interaction**
+- **Hook Version**: 1.02
+- **Date**: 20-05-2026 21:49
+- **Prompt**: After each successful response in render_chat_tab, render_quiz_tab, render_flashcards_tab, and render_code_review_tab, automatically refresh st.session_state["metrics"] by calling fetch_metrics().

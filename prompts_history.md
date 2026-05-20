@@ -78,9 +78,15 @@
 ### 20-05-2026 21:41
 - **Prompt**: Add a /metrics/ GET endpoint to app/routes.py. Create a simple in-memory counter dict that tracks total_requests and total_tokens_used. Increment total_requests and total_tokens_used in the /chat/ and /generate/quiz/ and /generate/flashcards/ and /generate/code-review/ endpoints. The /metrics/ endpoint should return these two values.
 
+### 20-05-2026 21:48
+- **Prompt**: Add a metrics panel to the frontend sidebar that fetches GET /metrics/ and displays total requests and total tokens used. Add a refresh button for it.
+
 ### 20-05-2026 21:44
 - **Prompt**: Add a /metrics/ GET endpoint to app/routes.py. Create a simple in-memory counter dict that tracks total_requests and total_tokens_used. Increment total_requests and total_tokens_used in the /chat/ and /generate/quiz/ and /generate/flashcards/ and /generate/code-review/ endpoints. The /metrics/ endpoint should return these two values.
 
 ### 20-05-2026 21:43
 - **Prompt**: Add a metrics panel to the frontend sidebar that fetches GET /metrics/ and displays total requests and total tokens used. Add a refresh button for it.
+
+### 20-05-2026 21:49
+- **Prompt**: After each successful response in render_chat_tab, render_quiz_tab, render_flashcards_tab, and render_code_review_tab, automatically refresh st.session_state["metrics"] by calling fetch_metrics().
 
