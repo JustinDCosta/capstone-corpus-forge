@@ -125,6 +125,13 @@
 
 ### **New Interaction**
 - **Hook Version**: 1.02
+- **Date**: 20-05-2026 21:44
+- **Prompt**: Add a /metrics/ GET endpoint to app/routes.py. Create a simple in-memory counter dict that tracks total_requests and total_tokens_used. Increment total_requests and total_tokens_used in the /chat/ and /generate/quiz/ and /generate/flashcards/ and /generate/code-review/ endpoints. The /metrics/ endpoint should return these two values.
+- **Changes Made**: Added an in-memory metrics counter dict in `app/routes.py` with `total_requests` and `total_tokens_used`, added `GET /metrics/`, and incremented both counters in `/chat/`, `/generate/quiz/`, `/generate/flashcards/`, and `/generate/code-review/` using Groq usage token counts.
+- **Context and Reasons for Changes**: Provides lightweight runtime observability over request volume and token usage for the main LLM-backed endpoints.
+
+### **New Interaction**
+- **Hook Version**: 1.02
 - **Date**: 20-05-2026 20:48
 - **Prompt**: Yes, explain how these risks apply specifically to my FastAPI upload endpoint and the RAG ingestion flow. Still no code, just explain.
 
@@ -182,3 +189,8 @@
 - **Hook Version**: 1.02
 - **Date**: 20-05-2026 21:41
 - **Prompt**: Add a /metrics/ GET endpoint to app/routes.py. Create a simple in-memory counter dict that tracks total_requests and total_tokens_used. Increment total_requests and total_tokens_used in the /chat/ and /generate/quiz/ and /generate/flashcards/ and /generate/code-review/ endpoints. The /metrics/ endpoint should return these two values.
+
+### **New Interaction**
+- **Hook Version**: 1.02
+- **Date**: 20-05-2026 21:43
+- **Prompt**: Add a metrics panel to the frontend sidebar that fetches GET /metrics/ and displays total requests and total tokens used. Add a refresh button for it.
