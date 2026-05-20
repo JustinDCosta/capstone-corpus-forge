@@ -27,3 +27,6 @@
 ### 20-05-2026 20:48
 - **Prompt**: Yes, explain how these risks apply specifically to my FastAPI upload endpoint and the RAG ingestion flow. Still no code, just explain.
 
+### 20-05-2026 20:48
+- **Prompt**: Looking at my upload endpoint, which specific part is most risky right now? Show me just that one issue and how to fix it. Start with file size limits since that is the easiest denial of service risk.
+
