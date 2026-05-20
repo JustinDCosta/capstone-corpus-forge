@@ -97,6 +97,13 @@
 
 ### **New Interaction**
 - **Hook Version**: 1.02
+- **Date**: 20-05-2026 21:10
+- **Prompt**: Implement just the Chat tab. Connect it to POST /chat/ with query, audience_level and tone parameters. Show the response and the token metrics. Leave all other tabs as TODOs.
+- **Changes Made**: Implemented the Streamlit Chat tab to submit query, audience level, and tone to `POST /chat/`, then display the response and token metrics.
+- **Context and Reasons for Changes**: The Chat tab now provides the core RAG interaction path while preserving the existing TODO scaffolding for all other tabs.
+
+### **New Interaction**
+- **Hook Version**: 1.02
 - **Date**: 20-05-2026 20:48
 - **Prompt**: Yes, explain how these risks apply specifically to my FastAPI upload endpoint and the RAG ingestion flow. Still no code, just explain.
 

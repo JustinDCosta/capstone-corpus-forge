@@ -54,3 +54,6 @@
 ### 20-05-2026 21:09
 - **Prompt**: Implement just the Chat tab. Connect it to POST /chat/ with query, audience_level and tone parameters. Show the response and the token metrics. Leave all other tabs as TODOs.
 
+### 20-05-2026 21:10
+- **Prompt**: Implement just the Chat tab. Connect it to POST /chat/ with query, audience_level and tone parameters. Show the response and the token metrics. Leave all other tabs as TODOs.
+

@@ -80,10 +80,53 @@ def render_upload_tab() -> None:
 
 
 def render_chat_tab() -> None:
-    """Render the RAG chat tab scaffold."""
+    """Render the RAG chat tab."""
     st.header("Chat with Corpus")
-    st.write("TODO: Build the chat form for POST /chat/.")
-    st.write("TODO: Include query, audience_level, and tone inputs.")
+
+    with st.form("chat_form"):
+        query = st.text_area(
+            "Query",
+            placeholder="Ask a question about the uploaded corpus...",
+            height=160,
+        )
+        audience_level = st.selectbox(
+            "Audience level",
+            ["expert", "intermediate", "beginner"],
+            index=0,
+        )
+        tone = st.selectbox(
+            "Tone",
+            ["professional", "friendly", "concise", "detailed"],
+            index=0,
+        )
+        submitted = st.form_submit_button("Send to backend", use_container_width=True)
+
+    if submitted:
+        if not query.strip():
+            st.warning("Enter a query first.")
+            return
+
+        try:
+            response = httpx.post(
+                f"{BACKEND_URL}/chat/",
+                data={
+                    "query": query,
+                    "audience_level": audience_level,
+                    "tone": tone,
+                },
+                timeout=120.0,
+            )
+            response.raise_for_status()
+            payload = response.json()
+
+            st.subheader("Response")
+            st.write(payload.get("response", "No response returned."))
+
+            metrics = payload.get("metrics", {})
+            st.subheader("Token metrics")
+            st.json(metrics)
+        except Exception as exc:
+            st.error(f"Chat request failed: {exc}")
 
 
 def render_quiz_tab() -> None:
