@@ -246,3 +246,8 @@
 - **Hook Version**: 1.02
 - **Date**: 23-05-2026 20:43
 - **Prompt**: Add a new tab called "Saved Artifacts" to frontend.py. It should fetch GET /artifacts/ to list saved artifact filenames, let the user select one, fetch GET /artifacts/{artifact_name} to load it, and display the content nicely depending on whether it's a quiz or flashcards.
+
+### **New Interaction**
+- **Hook Version**: 1.02
+- **Date**: 23-05-2026 20:49
+- **Prompt**: Update the /chat/ endpoint in app/routes.py to accept an optional filename parameter. If provided, only query ChromaDB for chunks where metadata filename matches. If not provided, query all documents as before. Then update the chat form in frontend.py to pass the selected_document from session state as the filename parameter.
