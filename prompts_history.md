@@ -99,3 +99,6 @@
 ### 23-05-2026 20:25
 - **Prompt**: The previous suggestion used Flask but my backend uses FastAPI. Please rewrite the artifact persistence logic for FastAPI. Add it to app/routes.py. Save quiz and flashcards results to data/artifacts/ folder after generation. Add GET /artifacts/ and GET /artifacts/{artifact_name} endpoints using FastAPI syntax.
 
+### 23-05-2026 20:34
+- **Prompt**: There is a syntax error in app/routes.py at line 288. The error says expected 'except' or 'finally' block. Can you fix it?
+
