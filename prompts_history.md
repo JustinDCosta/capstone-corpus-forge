@@ -102,3 +102,6 @@
 ### 23-05-2026 20:34
 - **Prompt**: There is a syntax error in app/routes.py at line 288. The error says expected 'except' or 'finally' block. Can you fix it?
 
+### 23-05-2026 20:43
+- **Prompt**: Add a new tab called "Saved Artifacts" to frontend.py. It should fetch GET /artifacts/ to list saved artifact filenames, let the user select one, fetch GET /artifacts/{artifact_name} to load it, and display the content nicely depending on whether it's a quiz or flashcards.
+
