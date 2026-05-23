@@ -1,0 +1,24 @@
+{
+  "flashcards": [
+    {
+      "front": "Boid Separation",
+      "back": "The behavior where boids steer away from nearby boids to avoid crowding. It is implemented by calculating a vector pointing away from each nearby boid, inversely proportional to the distance, and summing these vectors to get the overall separation steering force."
+    },
+    {
+      "front": "Boid Alignment",
+      "back": "The behavior where boids steer toward the average direction of nearby boids. It is implemented by summing up the velocity vectors of nearby boids, dividing by the number of nearby boids to get the average velocity, and subtracting the current boid's velocity to get the alignment steering force."
+    },
+    {
+      "front": "Boid Cohesion",
+      "back": "The behavior where boids steer toward the average position of nearby boids. It is implemented by summing up the position vectors of nearby boids, dividing by the number of nearby boids to get the average position, and subtracting the current boid's position to get the cohesion steering force."
+    },
+    {
+      "front": "Screen Wrapping",
+      "back": "A behavior where if a boid goes off one edge of the screen, it reappears on the opposite edge. It is implemented by checking if the boid's position is outside the screen boundaries and adjusting its position accordingly."
+    },
+    {
+      "front": "Random Steering",
+      "back": "A behavior where boids randomly steer to create more natural movement. It is implemented by adding a random offset to the current movement angle and updating the velocity vector accordingly."
+    }
+  ]
+}

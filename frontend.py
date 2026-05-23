@@ -32,6 +32,29 @@ def fetch_metrics() -> dict:
         return {"total_requests": 0, "total_tokens_used": 0}
 
 
+def fetch_artifacts_list() -> list[str]:
+    """Fetch the list of saved artifact filenames from the backend."""
+    try:
+        response = httpx.get(f"{BACKEND_URL}/artifacts/", timeout=10.0)
+        response.raise_for_status()
+        payload = response.json()
+        return payload.get("artifacts", []) if isinstance(payload, dict) else []
+    except Exception as exc:
+        st.sidebar.error(f"Failed to load artifacts: {exc}")
+        return []
+
+
+def fetch_artifact_content(artifact_name: str):
+    """Fetch the JSON content of a saved artifact."""
+    try:
+        response = httpx.get(f"{BACKEND_URL}/artifacts/{artifact_name}", timeout=10.0)
+        response.raise_for_status()
+        return response.json()
+    except Exception as exc:
+        st.error(f"Failed to load artifact '{artifact_name}': {exc}")
+        return None
+
+
 def upload_document(uploaded_file) -> None:
     """Upload a file to the FastAPI backend."""
     try:
@@ -297,6 +320,66 @@ def render_code_review_tab() -> None:
                 st.error(f"Code review request failed: {exc}")
 
 
+def render_artifacts_tab() -> None:
+    """Render Saved Artifacts tab: list, load, and display saved quizzes/flashcards."""
+    st.header("Saved Artifacts")
+
+    if "artifacts" not in st.session_state:
+        st.session_state["artifacts"] = fetch_artifacts_list()
+
+    cols = st.columns([0.7, 0.3])
+    with cols[0]:
+        artifact_list = st.selectbox(
+            "Available artifacts",
+            options=st.session_state.get("artifacts", []),
+            key="selected_artifact",
+        )
+
+    with cols[1]:
+        if st.button("Refresh artifacts", use_container_width=True):
+            st.session_state["artifacts"] = fetch_artifacts_list()
+
+    selected = st.session_state.get("selected_artifact")
+    if not selected:
+        st.info("No artifact selected. Refresh the list if nothing appears.")
+        return
+
+    with st.spinner(f"Loading {selected}..."):
+        content = fetch_artifact_content(selected)
+
+    if content is None:
+        return
+
+    # Display based on shape
+    if isinstance(content, dict) and "quiz" in content:
+        st.subheader("Quiz")
+        quiz = content.get("quiz", [])
+        if not quiz:
+            st.write("(Empty quiz)")
+        for i, q in enumerate(quiz, start=1):
+            with st.expander(f"Q{i}: {q.get('question', 'Question')}"):
+                st.write("**Options:**")
+                options = q.get("options", [])
+                for opt in options:
+                    if opt == q.get("correct_answer"):
+                        st.write(f"- **{opt}**  ✅")
+                    else:
+                        st.write(f"- {opt}")
+
+    elif isinstance(content, dict) and "flashcards" in content:
+        st.subheader("Flashcards")
+        cards = content.get("flashcards", [])
+        if not cards:
+            st.write("(No flashcards present)")
+        for i, c in enumerate(cards, start=1):
+            with st.expander(f"Card {i}: {c.get('front', 'Front')}"):
+                st.write(c.get("back", "(No back content)"))
+
+    else:
+        st.subheader("Artifact JSON")
+        st.json(content)
+
+
 def main() -> None:
     st.set_page_config(page_title="Corpus Forge Frontend", layout="wide")
 
@@ -305,8 +388,8 @@ def main() -> None:
 
     render_sidebar()
 
-    upload_tab, chat_tab, quiz_tab, flashcards_tab, review_tab = st.tabs(
-        ["Upload", "Chat", "Quiz", "Flashcards", "Code Review"]
+    upload_tab, chat_tab, quiz_tab, flashcards_tab, review_tab, artifacts_tab = st.tabs(
+        ["Upload", "Chat", "Quiz", "Flashcards", "Code Review", "Saved Artifacts"]
     )
 
     with upload_tab:
@@ -323,6 +406,9 @@ def main() -> None:
 
     with review_tab:
         render_code_review_tab()
+
+    with artifacts_tab:
+        render_artifacts_tab()
 
 
 if __name__ == "__main__":
