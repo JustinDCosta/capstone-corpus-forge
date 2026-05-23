@@ -96,3 +96,6 @@
 ### 23-05-2026 20:22
 - **Prompt**: In app/routes.py, after generating a quiz or flashcards, save the result as a JSON file in a data/artifacts/ folder. Name the file {filename}_quiz.json or {filename}_flashcards.json. Create the folder if it doesn't exist. Add a GET /artifacts/ endpoint that lists all saved artifact filenames and a GET /artifacts/{artifact_name} endpoint that returns the content of a saved artifact.
 
+### 23-05-2026 20:25
+- **Prompt**: The previous suggestion used Flask but my backend uses FastAPI. Please rewrite the artifact persistence logic for FastAPI. Add it to app/routes.py. Save quiz and flashcards results to data/artifacts/ folder after generation. Add GET /artifacts/ and GET /artifacts/{artifact_name} endpoints using FastAPI syntax.
+
