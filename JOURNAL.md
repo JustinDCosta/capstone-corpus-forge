@@ -213,3 +213,8 @@
 - **Prompt**: After each successful response in render_chat_tab, render_quiz_tab, render_flashcards_tab, and render_code_review_tab, automatically refresh st.session_state["metrics"] by calling fetch_metrics().
 - **Changes Made**: Updated `frontend.py` to refresh `st.session_state["metrics"] = fetch_metrics()` after each successful backend response in Chat, Quiz, Flashcards, and Code Review tabs.
 - **Context and Reasons for Changes**: Keeps sidebar metrics synchronized with backend counters immediately after user actions without requiring manual refresh.
+
+### **New Interaction**
+- **Hook Version**: 1.02
+- **Date**: 23-05-2026 20:22
+- **Prompt**: In app/routes.py, after generating a quiz or flashcards, save the result as a JSON file in a data/artifacts/ folder. Name the file {filename}_quiz.json or {filename}_flashcards.json. Create the folder if it doesn't exist. Add a GET /artifacts/ endpoint that lists all saved artifact filenames and a GET /artifacts/{artifact_name} endpoint that returns the content of a saved artifact.

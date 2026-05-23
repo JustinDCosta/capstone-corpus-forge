@@ -93,3 +93,6 @@
 
 ### 20-05-2026 21:52
 - **Prompt**: After each successful response in render_chat_tab, render_quiz_tab, render_flashcards_tab, and render_code_review_tab, automatically refresh st.session_state["metrics"] by calling fetch_metrics().
+### 23-05-2026 20:22
+- **Prompt**: In app/routes.py, after generating a quiz or flashcards, save the result as a JSON file in a data/artifacts/ folder. Name the file {filename}_quiz.json or {filename}_flashcards.json. Create the folder if it doesn't exist. Add a GET /artifacts/ endpoint that lists all saved artifact filenames and a GET /artifacts/{artifact_name} endpoint that returns the content of a saved artifact.
+
