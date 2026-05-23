@@ -181,13 +181,18 @@ def render_chat_tab() -> None:
             return
 
         try:
+            data = {
+                "query": query,
+                "audience_level": audience_level,
+                "tone": tone,
+            }
+            filename = st.session_state.get("selected_document")
+            if filename:
+                data["filename"] = filename
+
             response = httpx.post(
                 f"{BACKEND_URL}/chat/",
-                data={
-                    "query": query,
-                    "audience_level": audience_level,
-                    "tone": tone,
-                },
+                data=data,
                 timeout=120.0,
             )
             response.raise_for_status()

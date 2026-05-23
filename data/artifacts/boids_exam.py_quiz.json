@@ -1,54 +1,54 @@
 {
   "quiz": [
     {
-      "question": "What is the purpose of the SEPARATION_DISTANCE parameter in the Config class?",
+      "question": "What is the purpose of the SEPARATION_DISTANCE parameter in the Boid simulation?",
       "options": [
-        "To determine which nearby boids to consider for the alignment behavior.",
-        "To determine which nearby boids to consider for the cohesion behavior.",
-        "To determine the minimum distance to maintain from other boids.",
-        "To determine the maximum distance to consider for the separation behavior."
+        "To determine which nearby boids to consider for the alignment behavior",
+        "To determine which nearby boids to consider for the cohesion behavior",
+        "To determine the minimum distance to maintain from other boids",
+        "To determine the maximum distance to consider for the separation behavior"
       ],
-      "correct_answer": "To determine the minimum distance to maintain from other boids."
+      "correct_answer": "To determine the minimum distance to maintain from other boids"
+    },
+    {
+      "question": "What is the purpose of the ALIGNMENT_DISTANCE parameter in the Boid simulation?",
+      "options": [
+        "To determine the minimum distance to maintain from other boids",
+        "To determine the maximum distance to consider for the alignment behavior",
+        "To determine which nearby boids to consider for the cohesion behavior",
+        "To determine the average direction of nearby boids"
+      ],
+      "correct_answer": "To determine the maximum distance to consider for the alignment behavior"
+    },
+    {
+      "question": "What is the purpose of the COHESION_DISTANCE parameter in the Boid simulation?",
+      "options": [
+        "To determine the minimum distance to maintain from other boids",
+        "To determine the maximum distance to consider for the cohesion behavior",
+        "To determine which nearby boids to consider for the alignment behavior",
+        "To determine the average position of nearby boids"
+      ],
+      "correct_answer": "To determine the maximum distance to consider for the cohesion behavior"
     },
     {
       "question": "What is the purpose of the _separation method in the Boid class?",
       "options": [
-        "To steer toward the average position of nearby boids.",
-        "To steer away from nearby boids to avoid crowding.",
-        "To steer toward the average direction of nearby boids.",
-        "To apply random steering to create natural movement."
+        "To calculate the average velocity of nearby boids",
+        "To calculate the average position of nearby boids",
+        "To calculate the steering force to avoid crowding",
+        "To calculate the steering force to align with nearby boids"
       ],
-      "correct_answer": "To steer away from nearby boids to avoid crowding."
+      "correct_answer": "To calculate the steering force to avoid crowding"
     },
     {
       "question": "What is the purpose of the _alignment method in the Boid class?",
       "options": [
-        "To steer away from nearby boids to avoid crowding.",
-        "To steer toward the average position of nearby boids.",
-        "To steer toward the average direction of nearby boids.",
-        "To apply random steering to create natural movement."
+        "To calculate the steering force to avoid crowding",
+        "To calculate the steering force to align with nearby boids",
+        "To calculate the average velocity of nearby boids",
+        "To calculate the average position of nearby boids"
       ],
-      "correct_answer": "To steer toward the average direction of nearby boids."
-    },
-    {
-      "question": "What is the purpose of the _cohesion method in the Boid class?",
-      "options": [
-        "To steer away from nearby boids to avoid crowding.",
-        "To steer toward the average position of nearby boids.",
-        "To steer toward the average direction of nearby boids.",
-        "To apply random steering to create natural movement."
-      ],
-      "correct_answer": "To steer toward the average position of nearby boids."
-    },
-    {
-      "question": "What is the purpose of the _random_steer method in the Boid class?",
-      "options": [
-        "To steer away from nearby boids to avoid crowding.",
-        "To steer toward the average position of nearby boids.",
-        "To steer toward the average direction of nearby boids.",
-        "To apply random steering to create natural movement."
-      ],
-      "correct_answer": "To apply random steering to create natural movement."
+      "correct_answer": "To calculate the steering force to align with nearby boids"
     }
   ]
 }
