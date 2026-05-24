@@ -131,13 +131,6 @@
 
 ### 24-05-2026 23:11
 - **Prompt**: let's do everything (backend and frontend). since this is for a 1st year capstone project, please make the comments aimed at beginners so my teammates and professor know exactly what every block is doing. and yeah, you can remove redundant ones if it makes the code look cleaner, just make sure the tricky logic (like the chunking math, the chroma db setup, and the groq api calls) is explained really well.
-
-### 24-05-2026 23:15
-- **Prompt**: check the Report.md and see if everything aligns
-
-### 24-05-2026 23:16
-- **Prompt**: Yes, update both Readme and report
-
-### 24-05-2026 23:18
-- **Prompt**: update only the report.md
+### 24-05-2026 23:19
+- **Prompt**: Do a re-analysis of the files and changes made. Update Readme.md to be in synce with the changes made. Also add/edit instruction for running the start.py.
 

@@ -374,37 +374,5 @@
 
 ### **New Interaction**
 - **Hook Version**: 1.02
-- **Date**: 24-05-2026 23:15
-- **Prompt**: check the Report.md and see if everything aligns
-### **New Interaction**
-- **Agent Version**: 2.3
-- **Date**: 24-05-2026 23:15
-- **User**: justin.d-costa@epita.fr
-- **Prompt**: check the Report.md and see if everything aligns
-- **CoPilot Mode**: Ask
-- **CoPilot Model**: GPT-5.2-Codex
-- **Socratic Mode**: ON
-- **Changes Made**: No code changes; reviewed README and REPORT for alignment.
-- **Context and Reasons for Changes**: Identified documentation mismatches after recent security and tooling updates.
-
-
-### **New Interaction**
-- **Hook Version**: 1.02
-- **Date**: 24-05-2026 23:16
-- **Prompt**: Yes, update both Readme and report
-### **New Interaction**
-- **Agent Version**: 2.3
-- **Date**: 24-05-2026 23:17
-- **User**: justin.d-costa@epita.fr
-- **Prompt**: Yes, update both Readme and report
-- **CoPilot Mode**: Edit
-- **CoPilot Model**: GPT-5.2-Codex
-- **Socratic Mode**: ON
-- **Changes Made**: Updated README and REPORT to reflect start.py, optional API key auth, CORS defaults, and upload size enforcement.
-- **Context and Reasons for Changes**: Align documentation with current backend/frontend behavior and configuration.
-
-
-### **New Interaction**
-- **Hook Version**: 1.02
-- **Date**: 24-05-2026 23:18
-- **Prompt**: update only the report.md
+- **Date**: 24-05-2026 23:19
+- **Prompt**: Do a re-analysis of the files and changes made. Update Readme.md to be in synce with the changes made. Also add/edit instruction for running the start.py.
