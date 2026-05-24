@@ -256,3 +256,19 @@
 - **Hook Version**: 1.02
 - **Date**: 24-05-2026 20:45
 - **Prompt**: I am the backend programmer. My colleagues have made some changes and refactored the main.py and split it into multiple files so as to make it more accessible and understandable. Just to get back on track. Do a full analysis of the project and tell me what is up and and detailed summary.
+### **New Interaction**
+- **Agent Version**: 2.3
+- **Date**: 24-05-2026 20:48
+- **User**: justin.d-costa@epita.fr
+- **Prompt**: I am the backend programmer. My colleagues have made some changes and refactored the main.py and split it into multiple files so as to make it more accessible and understandable. Just to get back on track. Do a full analysis of the project and tell me what is up and and detailed summary.
+- **CoPilot Mode**: Ask
+- **CoPilot Model**: GPT-5.2-Codex
+- **Socratic Mode**: ON
+- **Changes Made**: No code changes; analysis only.
+- **Context and Reasons for Changes**: Reviewed backend, frontend, and docs to summarize current structure, flow, and gaps.
+
+
+### **New Interaction**
+- **Hook Version**: 1.02
+- **Date**: 24-05-2026 22:23
+- **Prompt**: okay, for now, help me by building a small python file, name it start.py. It should be able to start the backend, wait for it to start completely and then start the frontend. put it in the root folder.
