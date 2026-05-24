@@ -251,3 +251,8 @@
 - **Hook Version**: 1.02
 - **Date**: 23-05-2026 20:49
 - **Prompt**: Update the /chat/ endpoint in app/routes.py to accept an optional filename parameter. If provided, only query ChromaDB for chunks where metadata filename matches. If not provided, query all documents as before. Then update the chat form in frontend.py to pass the selected_document from session state as the filename parameter.
+
+### **New Interaction**
+- **Hook Version**: 1.02
+- **Date**: 24-05-2026 20:45
+- **Prompt**: I am the backend programmer. My colleagues have made some changes and refactored the main.py and split it into multiple files so as to make it more accessible and understandable. Just to get back on track. Do a full analysis of the project and tell me what is up and and detailed summary.
