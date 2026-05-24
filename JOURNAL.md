@@ -312,3 +312,19 @@
 - **Hook Version**: 1.02
 - **Date**: 24-05-2026 22:48
 - **Prompt**: Fix them and also explain how you did them?
+### **New Interaction**
+- **Agent Version**: 2.3
+- **Date**: 24-05-2026 22:50
+- **User**: justin.d-costa@epita.fr
+- **Prompt**: Fix them and also explain how you did them?
+- **CoPilot Mode**: Edit
+- **CoPilot Model**: GPT-5.2-Codex
+- **Socratic Mode**: ON
+- **Changes Made**: Hardened artifact naming, enforced upload limits, added optional API key checks, tightened CORS defaults, and sanitized error responses; updated frontend to send auth headers when configured.
+- **Context and Reasons for Changes**: Addressed previously identified security flaws and kept behavior compatible for local dev via optional env config.
+
+
+### **New Interaction**
+- **Hook Version**: 1.02
+- **Date**: 24-05-2026 23:00
+- **Prompt**: lets do 1
