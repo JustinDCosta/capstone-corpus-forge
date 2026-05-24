@@ -392,3 +392,19 @@
 - **Hook Version**: 1.02
 - **Date**: 24-05-2026 23:16
 - **Prompt**: Yes, update both Readme and report
+### **New Interaction**
+- **Agent Version**: 2.3
+- **Date**: 24-05-2026 23:17
+- **User**: justin.d-costa@epita.fr
+- **Prompt**: Yes, update both Readme and report
+- **CoPilot Mode**: Edit
+- **CoPilot Model**: GPT-5.2-Codex
+- **Socratic Mode**: ON
+- **Changes Made**: Updated README and REPORT to reflect start.py, optional API key auth, CORS defaults, and upload size enforcement.
+- **Context and Reasons for Changes**: Align documentation with current backend/frontend behavior and configuration.
+
+
+### **New Interaction**
+- **Hook Version**: 1.02
+- **Date**: 24-05-2026 23:18
+- **Prompt**: update only the report.md
