@@ -18,7 +18,7 @@ The first version was a single `main.py` file that handled everything -- setting
 
 ### Initial assumptions
 
-- The app would only run locally on one machine, not on the internet. This meant we could be more relaxed about things like CORS and authentication.
+- The app would only run locally on one machine, not on the internet. This meant we could be more relaxed about things like CORS and authentication. Later, we added optional API-key auth and a CORS allowlist so running on a shared network is safer if configured.
 - Users would upload relatively small files (under 10 MB). We were not trying to handle textbooks with thousands of pages.
 - ChromaDB's local persistent storage would be enough. We did not need a separate database server.
 - The Groq API with Llama 3.1 8B would be fast enough and good enough for generating answers, quizzes, flashcards, and code reviews.
@@ -114,6 +114,12 @@ The first version was a single `main.py` file that handled everything -- setting
 
 **Decision:** Streamlit. The entire frontend is one Python file (330 lines). It is not the most customizable framework, but for a demo-oriented capstone project, being able to build the whole UI in an afternoon is worth the tradeoff.
 
+### 9. Optional API key for backend access
+
+**Problem:** The backend originally had no authentication, which is fine for local-only use but risky if exposed on a shared network.
+
+**Decision:** We added an optional `CORPUS_FORGE_API_KEY`. If set, clients must include `X-API-Key` on every request. If not set, the backend behaves like the original local-only version. This keeps local development simple while allowing a safer configuration when needed.
+
 ---
 
 ## Division of Work
@@ -155,7 +161,7 @@ AI was used throughout the project, but in a deliberate, incremental way. Rather
    - Then Code Review.
    - Then the delete button and metrics panel.
 
-5. **Security hardening** -- The upload file size limit was added after the AI explained the denial-of-service risk and showed the fix pattern. The temp file cleanup in a `finally` block also came from the security audit.
+5. **Security hardening** -- The upload file size limit and temp file cleanup were added after the AI explained denial-of-service risks. Later, we also added optional API-key auth and tightened default CORS origins to localhost for safer shared-network use.
 
 ### How AI influenced decisions
 
@@ -185,9 +191,9 @@ The journal logger agent had a bug where it would sometimes log the same prompt 
 
 During the refactoring session, the journal and prompt history files got moved from the root directory to a `records/` folder and then back to root. This caused some confusion with the AI logger not knowing where to write. It took a few prompts to sort out ("no, the files are in records now" followed by "ok, it's in root now, do as you always have"). This was a coordination issue, not a code issue.
 
-### CORS left wide open
+### CORS too permissive (later fixed)
 
-The CORS middleware is set to `allow_origins=["*"]`, which means any website can make requests to the backend. The security audit flagged this, and the team acknowledged it, but since the app only runs locally it was left as-is with a comment explaining the tradeoff. For a production deployment, this would need to be locked down to specific origins.
+Early on, the CORS middleware was set to `allow_origins=["*"]`, which meant any website could make requests to the backend. This was acceptable only because the app was local-only. After the security review, we tightened CORS to localhost by default and added an `ALLOWED_ORIGINS` environment variable for explicit allowlisting when needed.
 
 ### In-memory metrics do not persist
 

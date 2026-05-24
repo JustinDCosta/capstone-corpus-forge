@@ -376,3 +376,15 @@
 - **Hook Version**: 1.02
 - **Date**: 24-05-2026 23:19
 - **Prompt**: Do a re-analysis of the files and changes made. Update Readme.md to be in synce with the changes made. Also add/edit instruction for running the start.py.
+### **New Interaction**
+- **Agent Version**: 2.3
+- **Date**: 24-05-2026 23:20
+- **User**: justin.d-costa@epita.fr
+- **Prompt**: Do a re-analysis of the files and changes made.
+Update Readme.md to be in synce with the changes made. Also add/edit instruction for running the start.py.
+- **CoPilot Mode**: Edit
+- **CoPilot Model**: GPT-5.2-Codex
+- **Socratic Mode**: ON
+- **Changes Made**: Updated README.md with start.py usage, optional API key/CORS config, and project structure updates.
+- **Context and Reasons for Changes**: Align documentation with current security and startup workflow.
+

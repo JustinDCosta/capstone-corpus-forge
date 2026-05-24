@@ -50,9 +50,10 @@ The main features are:
 ```
 capstone-corpus-forge-main/
 ├── main.py                 # Entry point, starts the FastAPI server
+├── start.py                # Starts backend, waits for readiness, then starts frontend
 ├── frontend.py             # Streamlit frontend
 ├── requirements.txt        # Python dependencies
-├── .env                    # Your Groq API key goes here (not in the repo)
+├── .env                    # API keys and local config (not in the repo)
 ├── app/
 │   ├── __init__.py         # Creates the FastAPI app and sets up CORS
 │   ├── config.py           # Loads environment variables and sets up the Groq client
@@ -70,7 +71,7 @@ capstone-corpus-forge-main/
 
 ## Prerequisites
 
-- Python 3.10 or higher
+- Python 3.12
 - A Groq API key (you can get one for free at [console.groq.com](https://console.groq.com))
 
 ---
@@ -101,17 +102,31 @@ capstone-corpus-forge-main/
    pip install -r requirements.txt
    ```
 
-4. **Create a `.env` file** in the project root with your Groq API key:
+4. **Create a `.env` file** in the project root:
 
    ```
    GROQ_API_KEY=your_key_here
+   
+   # Optional: require an API key on every backend request
+   CORPUS_FORGE_API_KEY=your_optional_key_here
+    
+   # Optional: restrict browser origins for CORS (comma-separated)
+   ALLOWED_ORIGINS=http://localhost:8501,http://127.0.0.1:8501
    ```
 
 ---
 
 ## Running the App
 
-You need two terminals -- one for the backend and one for the frontend.
+**Option A -- One command (recommended):**
+
+```bash
+python start.py
+```
+
+This starts the backend, waits for `http://127.0.0.1:8000/ping` to return 200, then starts the Streamlit frontend. Press `Ctrl+C` to stop both.
+
+**Option B -- Two terminals (manual):**
 
 **Terminal 1 -- Start the backend:**
 
@@ -144,6 +159,8 @@ This opens the Streamlit UI in your browser (usually at `http://localhost:8501`)
 | POST   | `/generate/flashcards/`       | Generate flashcards (field: `filename`)   |
 | POST   | `/generate/code-review/`      | Generate a code review (field: `filename`)|
 | DELETE | `/documents/{filename}`       | Delete a document and all its chunks      |
+
+If `CORPUS_FORGE_API_KEY` is set, include `X-API-Key: <your_key>` on every request.
 
 ---
 

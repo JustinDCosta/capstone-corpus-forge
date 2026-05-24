@@ -1,0 +1,24 @@
+{
+  "flashcards": [
+    {
+      "front": "Generative AI for Software Engineering",
+      "back": "The application of Generative AI to software engineering, involving the use of AI-powered tools to design, develop, and test software systems."
+    },
+    {
+      "front": "Retrieval-Augmented Generation (RAG)",
+      "back": "A technique that combines retrieval and generation to produce more accurate and informative outputs, by retrieving relevant information and generating text based on that information."
+    },
+    {
+      "front": "AI-Assisted Development",
+      "back": "The use of AI tools to assist in the development process, including learning, designing, debugging, implementing, testing, and documenting software systems."
+    },
+    {
+      "front": "Engineering Challenges",
+      "back": "Specific technical challenges that teams must select and implement, such as retrieval strategies, prompt improvement, and interactive visualizations, to demonstrate their technical skills and creativity."
+    },
+    {
+      "front": "AI Usage Information",
+      "back": "Metrics and data that must be exposed by the application to demonstrate its usage of AI, including number of requests, token usage, and other relevant metrics."
+    }
+  ]
+}

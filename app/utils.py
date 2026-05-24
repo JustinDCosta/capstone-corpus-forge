@@ -12,6 +12,7 @@ def extract_text_from_file(file_path: str, filename: str) -> str:
     text = ""
 
     if ext in ["txt", "md", "py", "js"]:
+        # Plain text formats can be read directly with UTF-8.
         try:
             with open(file_path, "r", encoding="utf-8") as f:
                 text = f.read()
@@ -21,6 +22,7 @@ def extract_text_from_file(file_path: str, filename: str) -> str:
             )
 
     elif ext == "pdf":
+        # PDFs need a parser that can extract page text.
         try:
             doc = fitz.open(file_path)
             for page_num in range(len(doc)):
@@ -30,7 +32,7 @@ def extract_text_from_file(file_path: str, filename: str) -> str:
                     text += page_text + "\n"
             doc.close()
 
-            # Catch PDFs that are just scanned images
+            # Catch PDFs that are just scanned images with no text layer.
             if not text.strip():
                 raise HTTPException(
                     status_code=400,
@@ -57,6 +59,9 @@ def chunk_text(text: str, chunk_size: int = 1000, overlap: int = 200) -> list[st
     chunks = []
     start = 0
     while start < len(text):
+        # We take [start:end] where end = start + chunk_size.
+        # Then we move start forward by (chunk_size - overlap), so each chunk
+        # shares some text with the next one. This preserves context across boundaries.
         end = start + chunk_size
         chunks.append(text[start:end])
         start += chunk_size - overlap
@@ -74,7 +79,8 @@ def get_document_context(filename: str) -> str:
             status_code=404, detail=f"No data found in DB for {filename}"
         )
 
-    # Combine chunks into one string.
-    # Hard cap at ~24,000 characters to ensure we don't blow past Llama 3's 8k token context window.
+    # Combine all chunks into one string for generation endpoints.
+    # We hard-cap at ~24,000 characters to stay under the model context limit,
+    # leaving room for the system prompt and the generated output.
     full_text = "\n\n".join(doc_data["documents"])
     return full_text[:24000]

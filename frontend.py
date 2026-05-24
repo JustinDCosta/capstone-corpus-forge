@@ -1,13 +1,25 @@
+import os
+from dotenv import load_dotenv
 import streamlit as st
 import httpx
 
+# Load .env so CORPUS_FORGE_API_KEY is available for local dev.
+load_dotenv()
+
+# Backend base URL. Streamlit calls these endpoints over HTTP.
 BACKEND_URL = "http://127.0.0.1:8000"
+
+# Optional API key for backend auth. If not set, we skip the header.
+API_KEY = os.getenv("CORPUS_FORGE_API_KEY")
+AUTH_HEADERS = {"X-API-Key": API_KEY} if API_KEY else {}
 
 
 def fetch_documents() -> list[str]:
     """Fetch the current document list from the FastAPI backend."""
     try:
-        response = httpx.get(f"{BACKEND_URL}/documents/", timeout=10.0)
+        response = httpx.get(
+            f"{BACKEND_URL}/documents/", timeout=10.0, headers=AUTH_HEADERS
+        )
         response.raise_for_status()
         payload = response.json()
         documents = payload.get("documents", [])
@@ -20,7 +32,9 @@ def fetch_documents() -> list[str]:
 def fetch_metrics() -> dict:
     """Fetch global backend metrics."""
     try:
-        response = httpx.get(f"{BACKEND_URL}/metrics/", timeout=10.0)
+        response = httpx.get(
+            f"{BACKEND_URL}/metrics/", timeout=10.0, headers=AUTH_HEADERS
+        )
         response.raise_for_status()
         payload = response.json()
         return {
@@ -35,7 +49,9 @@ def fetch_metrics() -> dict:
 def fetch_artifacts_list() -> list[str]:
     """Fetch the list of saved artifact filenames from the backend."""
     try:
-        response = httpx.get(f"{BACKEND_URL}/artifacts/", timeout=10.0)
+        response = httpx.get(
+            f"{BACKEND_URL}/artifacts/", timeout=10.0, headers=AUTH_HEADERS
+        )
         response.raise_for_status()
         payload = response.json()
         return payload.get("artifacts", []) if isinstance(payload, dict) else []
@@ -47,7 +63,11 @@ def fetch_artifacts_list() -> list[str]:
 def fetch_artifact_content(artifact_name: str):
     """Fetch the JSON content of a saved artifact."""
     try:
-        response = httpx.get(f"{BACKEND_URL}/artifacts/{artifact_name}", timeout=10.0)
+        response = httpx.get(
+            f"{BACKEND_URL}/artifacts/{artifact_name}",
+            timeout=10.0,
+            headers=AUTH_HEADERS,
+        )
         response.raise_for_status()
         return response.json()
     except Exception as exc:
@@ -65,7 +85,12 @@ def upload_document(uploaded_file) -> None:
                 uploaded_file.type or "application/octet-stream",
             )
         }
-        response = httpx.post(f"{BACKEND_URL}/upload/", files=files, timeout=60.0)
+        response = httpx.post(
+            f"{BACKEND_URL}/upload/",
+            files=files,
+            timeout=60.0,
+            headers=AUTH_HEADERS,
+        )
         response.raise_for_status()
         payload = response.json()
         st.sidebar.success(payload.get("message", "Upload complete."))
@@ -95,6 +120,7 @@ def render_sidebar() -> None:
     st.sidebar.divider()
     st.sidebar.subheader("Documents")
 
+    # Cache documents in session_state so we do not refetch on every rerun.
     if "documents" not in st.session_state:
         st.session_state["documents"] = fetch_documents()
 
@@ -113,7 +139,9 @@ def render_sidebar() -> None:
             if cols[1].button("Delete", key=btn_key, use_container_width=True):
                 try:
                     resp = httpx.delete(
-                        f"{BACKEND_URL}/documents/{document_name}", timeout=30.0
+                        f"{BACKEND_URL}/documents/{document_name}",
+                        timeout=30.0,
+                        headers=AUTH_HEADERS,
                     )
                     resp.raise_for_status()
                     st.sidebar.success(resp.json().get("message", "Deleted."))
@@ -130,6 +158,7 @@ def render_sidebar() -> None:
     st.sidebar.divider()
     st.sidebar.subheader("Metrics")
 
+    # Metrics are also cached to reduce API calls.
     if "metrics" not in st.session_state:
         st.session_state["metrics"] = fetch_metrics()
 
@@ -186,6 +215,7 @@ def render_chat_tab() -> None:
                 "audience_level": audience_level,
                 "tone": tone,
             }
+            # Include filename to limit retrieval to one document.
             filename = st.session_state.get("selected_document")
             if filename:
                 data["filename"] = filename
@@ -194,6 +224,7 @@ def render_chat_tab() -> None:
                 f"{BACKEND_URL}/chat/",
                 data=data,
                 timeout=120.0,
+                headers=AUTH_HEADERS,
             )
             response.raise_for_status()
             payload = response.json()
@@ -226,6 +257,7 @@ def render_quiz_tab() -> None:
                     f"{BACKEND_URL}/generate/quiz/",
                     data={"filename": filename},
                     timeout=120.0,
+                    headers=AUTH_HEADERS,
                 )
                 resp.raise_for_status()
                 quiz_obj = resp.json()
@@ -253,6 +285,7 @@ def render_flashcards_tab() -> None:
                     f"{BACKEND_URL}/generate/flashcards/",
                     data={"filename": filename},
                     timeout=120.0,
+                    headers=AUTH_HEADERS,
                 )
                 resp.raise_for_status()
                 cards_obj = resp.json()
@@ -287,6 +320,7 @@ def render_code_review_tab() -> None:
                     f"{BACKEND_URL}/generate/code-review/",
                     data={"filename": filename},
                     timeout=120.0,
+                    headers=AUTH_HEADERS,
                 )
                 resp.raise_for_status()
                 body = resp.json()
@@ -329,6 +363,7 @@ def render_artifacts_tab() -> None:
     """Render Saved Artifacts tab: list, load, and display saved quizzes/flashcards."""
     st.header("Saved Artifacts")
 
+    # Cache the artifact list so we can reload it on demand.
     if "artifacts" not in st.session_state:
         st.session_state["artifacts"] = fetch_artifacts_list()
 
@@ -355,7 +390,7 @@ def render_artifacts_tab() -> None:
     if content is None:
         return
 
-    # Display based on shape
+    # Display artifacts differently depending on JSON schema.
     if isinstance(content, dict) and "quiz" in content:
         st.subheader("Quiz")
         quiz = content.get("quiz", [])

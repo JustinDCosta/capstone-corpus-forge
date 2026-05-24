@@ -1,0 +1,53 @@
+{
+  "quiz": [
+    {
+      "question": "What is the primary goal of this project?",
+      "options": [
+        "To build a web application",
+        "To demonstrate AI-assisted development skills",
+        "To apply Retrieval-Augmented Generation (RAG) techniques",
+        "To design and implement an AI-powered software system"
+      ],
+      "correct_answer": "To demonstrate AI-assisted development skills"
+    },
+    {
+      "question": "What are the core capabilities that the system must support?",
+      "options": [
+        "Import and process documents from at least 3 different file types",
+        "Users must be able to interact with the selected corpus through AI-powered, retrieval-grounded workflows",
+        "Users must be able to influence generation through customizable prompts or parameters",
+        "Documents, metadata, and generated artifacts must persist between application runs"
+      ],
+      "correct_answer": "Import and process documents from at least 3 different file types"
+    },
+    {
+      "question": "What are the two engineering challenges that each team must select?",
+      "options": [
+        "Implement and compare at least two retrieval strategies",
+        "Iteratively improve prompts for a specific task",
+        "Generate an interactive visualization derived from the corpus",
+        "Design tests for your system"
+      ],
+      "correct_answer": "Implement and compare at least two retrieval strategies"
+    },
+    {
+      "question": "What are the allowed uses of AI in this project?",
+      "options": [
+        "Learn, design, debug, implement, test, document",
+        "Generate the entire system or large components in one step",
+        "Generate the project's final REPORT.md"
+      ],
+      "correct_answer": "Learn, design, debug, implement, test, document"
+    },
+    {
+      "question": "What is the expected deliverable for this project?",
+      "options": [
+        "A runnable web application running locally on the user's machine",
+        "A GitHub repo with source code, documentation, and instructions to run the application locally",
+        "A technical report in the REPORT.md file",
+        "All of the above"
+      ],
+      "correct_answer": "All of the above"
+    }
+  ]
+}

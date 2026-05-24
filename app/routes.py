@@ -1,16 +1,53 @@
-from fastapi import APIRouter, UploadFile, File, Form, HTTPException
+from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Depends, Header
 from typing import Optional
+import hashlib
+import logging
 import tempfile
 import os
 import json
+import re
 from pathlib import Path
-from .config import groq_client
+from .config import groq_client, MAX_UPLOAD_BYTES, API_KEY
 from .db import collection
 from .utils import extract_text_from_file, chunk_text, get_document_context
 
-router = APIRouter()
+logger = logging.getLogger(__name__)
+SAFE_FILENAME_RE = re.compile(r"[^A-Za-z0-9._-]")
 
 
+def require_api_key(x_api_key: str | None = Header(default=None)) -> None:
+    # If no API key is configured, we allow requests (local dev default).
+    if not API_KEY:
+        return
+    # When a key is set, clients must send X-API-Key.
+    if x_api_key != API_KEY:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+
+
+def sanitize_filename(name: str) -> str:
+    # Strip directory components and replace unsafe characters.
+    # This prevents path traversal like "../../secret".
+    base_name = Path(name).name.strip()
+    if not base_name:
+        raise ValueError("Invalid filename")
+    return SAFE_FILENAME_RE.sub("_", base_name)
+
+
+def build_artifact_filename(filename_base: str, kind: str) -> str:
+    # Create a safe, deterministic artifact filename:
+    # - sanitize the user-provided name
+    # - add a short hash to avoid collisions
+    suffix = "_quiz.json" if kind == "quiz" else "_flashcards.json"
+    safe_base = sanitize_filename(filename_base)
+    digest = hashlib.sha256(filename_base.encode("utf-8")).hexdigest()[:8]
+    return f"{safe_base}_{digest}{suffix}"
+
+
+# Apply API key protection to every route in this file.
+router = APIRouter(dependencies=[Depends(require_api_key)])
+
+
+# Simple in-memory counters (reset on server restart).
 metrics_counters = {
     "total_requests": 0,
     "total_tokens_used": 0,
@@ -32,8 +69,7 @@ def save_artifact(filename_base: str, data_obj, kind: str) -> str:
     kind should be 'quiz' or 'flashcards'.
     """
     ensure_artifacts_dir()
-    suffix = "_quiz.json" if kind == "quiz" else "_flashcards.json"
-    safe_name = f"{filename_base}{suffix}"
+    safe_name = build_artifact_filename(filename_base, kind)
     path = ARTIFACTS_DIR / safe_name
     with path.open("w", encoding="utf-8") as fh:
         json.dump(data_obj, fh, ensure_ascii=False, indent=2)
@@ -59,28 +95,42 @@ async def upload_document(file: UploadFile = File(...)):
     Ingestion pipeline: Takes a file, extracts text, chunks it, and saves the vectors to ChromaDB.
     Includes a try/finally block to guarantee temporary files are wiped even if extraction crashes.
     """
-    if file.filename.split(".")[-1].lower() not in ["txt", "md", "pdf", "py", "js"]:
+    if not file.filename:
+        raise HTTPException(status_code=400, detail="Missing filename.")
+
+    # File type validation based on extension.
+    extension = Path(file.filename).suffix.lower().lstrip(".")
+    if extension not in ["txt", "md", "pdf", "py", "js"]:
         raise HTTPException(status_code=400, detail="Invalid file type.")
 
     temp_path = None
     try:
-        # Save to a temporary file on disk so PyMuPDF can actually read it
-        with tempfile.NamedTemporaryFile(
-            delete=False, suffix=f".{file.filename.split('.')[-1]}"
-        ) as temp_file:
-            content = await file.read()
-            temp_file.write(content)
+        # Save to a temporary file on disk so PyMuPDF can read PDFs.
+        # We stream the upload in chunks and enforce MAX_UPLOAD_BYTES.
+        with tempfile.NamedTemporaryFile(delete=False, suffix=f".{extension}") as temp_file:
             temp_path = temp_file.name
+            total_bytes = 0
+            while True:
+                chunk = await file.read(1024 * 1024)
+                if not chunk:
+                    break
+                total_bytes += len(chunk)
+                if total_bytes > MAX_UPLOAD_BYTES:
+                    raise HTTPException(
+                        status_code=413,
+                        detail="File too large. Max upload size is 10 MB.",
+                    )
+                temp_file.write(chunk)
 
         raw_text = extract_text_from_file(temp_path, file.filename)
         chunks = chunk_text(raw_text)
 
-        # Anti-duplicate logic: If this file is already in the DB, wipe the old chunks first.
+        # Anti-duplicate logic: replace existing chunks for the same filename.
         existing_docs = collection.get(where={"filename": file.filename})
         if existing_docs["ids"]:
             collection.delete(where={"filename": file.filename})
 
-        # Process and store in Chroma
+        # Process and store each chunk with metadata.
         for i, chunk in enumerate(chunks):
             chunk_id = f"{file.filename}_chunk_{i}"
             collection.add(
@@ -96,8 +146,11 @@ async def upload_document(file: UploadFile = File(...)):
             "chunks_processed": len(chunks),
         }
 
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except HTTPException:
+        raise
+    except Exception:
+        logger.exception("Upload failed")
+        raise HTTPException(status_code=500, detail="Internal server error.")
 
     finally:
         # HARDENED SECURITY: This always runs, preventing disk bloat during the demo
@@ -117,7 +170,7 @@ async def chat_with_corpus(
     and feeds them to Groq to generate an answer.
     """
     try:
-        # 1. Retrieve the most relevant chunks from the database
+        # 1. Retrieve the most relevant chunks from the vector database.
         if filename:
             results = collection.query(
                 query_texts=[query], n_results=3, where={"filename": filename}
@@ -132,7 +185,7 @@ async def chat_with_corpus(
 
         context = "\n\n---\n\n".join(results["documents"][0])
 
-        # 2. Build the system prompt using the rubric's Tone/Audience constraints
+        # 2. Build the system prompt with audience and tone settings.
         system_prompt = f"""You are Corpus Forge, an AI assistant analyzing a document corpus.
         Use ONLY the provided context to answer the user's query. If the answer is not in the context, say you don't know.
         
@@ -144,7 +197,7 @@ async def chat_with_corpus(
         {context}
         """
 
-        # 3. Call the Llama 3.1 model via Groq
+        # 3. Call the Groq-hosted LLM with the context and question.
         chat_completion = groq_client.chat.completions.create(
             messages=[
                 {"role": "system", "content": system_prompt},
@@ -157,7 +210,7 @@ async def chat_with_corpus(
         metrics_counters["total_requests"] += 1
         metrics_counters["total_tokens_used"] += chat_completion.usage.total_tokens
 
-        # We return metrics here for observability (good to show during the demo)
+        # Return metrics for debugging and demo visibility.
         return {
             "response": chat_completion.choices[0].message.content,
             "metrics": {
@@ -166,8 +219,11 @@ async def chat_with_corpus(
                 "retrieved_chunks": len(results["documents"][0]),
             },
         }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except HTTPException:
+        raise
+    except Exception:
+        logger.exception("Chat request failed")
+        raise HTTPException(status_code=500, detail="Internal server error.")
 
 
 @router.get("/documents/")
@@ -194,8 +250,9 @@ async def delete_document(filename: str):
         return {"message": f"Deleted all chunks for {filename}"}
     except HTTPException:
         raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except Exception:
+        logger.exception("Delete document failed")
+        raise HTTPException(status_code=500, detail="Internal server error.")
 
 
 @router.post("/generate/quiz/")
@@ -205,6 +262,7 @@ async def generate_quiz(filename: str = Form(...)):
     The response_format={"type": "json_object"} flag guarantees the frontend can easily map over the data.
     """
     try:
+        # Pull the full document (capped) so the model sees the complete content.
         context = get_document_context(filename)
 
         system_prompt = (
@@ -226,6 +284,7 @@ async def generate_quiz(filename: str = Form(...)):
             + context
         )
 
+        # Request strict JSON output so the frontend can parse it reliably.
         chat_completion = groq_client.chat.completions.create(
             messages=[{"role": "system", "content": system_prompt}],
             model="llama-3.1-8b-instant",
@@ -244,8 +303,11 @@ async def generate_quiz(filename: str = Form(...)):
             pass
 
         return quiz
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except HTTPException:
+        raise
+    except Exception:
+        logger.exception("Quiz generation failed")
+        raise HTTPException(status_code=500, detail="Internal server error.")
 
 
 @router.post("/generate/flashcards/")
@@ -254,6 +316,7 @@ async def generate_flashcards(filename: str = Form(...)):
     Generates JSON flashcards for studying.
     """
     try:
+        # Pull the full document (capped) so the model sees the complete content.
         context = get_document_context(filename)
 
         system_prompt = (
@@ -274,6 +337,7 @@ async def generate_flashcards(filename: str = Form(...)):
             + context
         )
 
+        # Request strict JSON output so the frontend can parse it reliably.
         chat_completion = groq_client.chat.completions.create(
             messages=[{"role": "system", "content": system_prompt}],
             model="llama-3.1-8b-instant",
@@ -291,8 +355,11 @@ async def generate_flashcards(filename: str = Form(...)):
             pass
 
         return flashcards
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except HTTPException:
+        raise
+    except Exception:
+        logger.exception("Flashcards generation failed")
+        raise HTTPException(status_code=500, detail="Internal server error.")
 
 
 @router.get("/artifacts/")
@@ -307,13 +374,17 @@ async def list_artifacts():
 async def get_artifact(artifact_name: str):
     """Return the JSON content of a saved artifact."""
     ensure_artifacts_dir()
-    # avoid path traversal
+    # Use only the base name to avoid path traversal like "../".
     artifact_name = Path(artifact_name).name
     path = ARTIFACTS_DIR / artifact_name
     if not path.exists() or not path.is_file():
         raise HTTPException(status_code=404, detail="Artifact not found")
-    with path.open("r", encoding="utf-8") as fh:
-        return json.load(fh)
+    try:
+        with path.open("r", encoding="utf-8") as fh:
+            return json.load(fh)
+    except Exception:
+        logger.exception("Failed to load artifact")
+        raise HTTPException(status_code=500, detail="Internal server error.")
 
 
 @router.post("/generate/code-review/")
@@ -323,6 +394,7 @@ async def generate_code_review(filename: str = Form(...)):
     Note: This is designed to work best on ingested .py or .js files, not random PDFs.
     """
     try:
+        # Pull the full document (capped) so the model can review all code.
         context = get_document_context(filename)
 
         system_prompt = (
@@ -344,6 +416,7 @@ async def generate_code_review(filename: str = Form(...)):
             + context
         )
 
+        # Request strict JSON output so the frontend can parse it reliably.
         chat_completion = groq_client.chat.completions.create(
             messages=[{"role": "system", "content": system_prompt}],
             model="llama-3.1-8b-instant",
@@ -355,5 +428,8 @@ async def generate_code_review(filename: str = Form(...)):
         metrics_counters["total_tokens_used"] += chat_completion.usage.total_tokens
 
         return json.loads(chat_completion.choices[0].message.content)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except HTTPException:
+        raise
+    except Exception:
+        logger.exception("Code review generation failed")
+        raise HTTPException(status_code=500, detail="Internal server error.")
