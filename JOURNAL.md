@@ -328,3 +328,19 @@
 - **Hook Version**: 1.02
 - **Date**: 24-05-2026 23:00
 - **Prompt**: lets do 1
+### **New Interaction**
+- **Agent Version**: 2.3
+- **Date**: 24-05-2026 23:01
+- **User**: justin.d-costa@epita.fr
+- **Prompt**: lets do 1
+- **CoPilot Mode**: Edit
+- **CoPilot Model**: GPT-5.2-Codex
+- **Socratic Mode**: ON
+- **Changes Made**: Added CORPUS_FORGE_API_KEY to .env and loaded .env in the frontend.
+- **Context and Reasons for Changes**: Enabled optional API key auth while keeping frontend in sync with backend config.
+
+
+### **New Interaction**
+- **Hook Version**: 1.02
+- **Date**: 24-05-2026 23:04
+- **Prompt**: To make the code readable and understandable by everyone, simplify where possible and use detailed comments everywhere and anywhere necessary.

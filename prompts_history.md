@@ -126,3 +126,6 @@
 ### 24-05-2026 23:00
 - **Prompt**: lets do 1
 
+### 24-05-2026 23:04
+- **Prompt**: To make the code readable and understandable by everyone, simplify where possible and use detailed comments everywhere and anywhere necessary.
+
