@@ -132,3 +132,6 @@
 ### 24-05-2026 23:11
 - **Prompt**: let's do everything (backend and frontend). since this is for a 1st year capstone project, please make the comments aimed at beginners so my teammates and professor know exactly what every block is doing. and yeah, you can remove redundant ones if it makes the code look cleaner, just make sure the tricky logic (like the chunking math, the chroma db setup, and the groq api calls) is explained really well.
 
+### 24-05-2026 23:15
+- **Prompt**: check the Report.md and see if everything aligns
+

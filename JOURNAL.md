@@ -360,3 +360,19 @@
 - **Hook Version**: 1.02
 - **Date**: 24-05-2026 23:11
 - **Prompt**: let's do everything (backend and frontend). since this is for a 1st year capstone project, please make the comments aimed at beginners so my teammates and professor know exactly what every block is doing. and yeah, you can remove redundant ones if it makes the code look cleaner, just make sure the tricky logic (like the chunking math, the chroma db setup, and the groq api calls) is explained really well.
+### **New Interaction**
+- **Agent Version**: 2.3
+- **Date**: 24-05-2026 23:13
+- **User**: justin.d-costa@epita.fr
+- **Prompt**: let's do everything (backend and frontend). since this is for a 1st year capstone project, please make the comments aimed at beginners so my teammates and professor know exactly what every block is doing. and yeah, you can remove redundant ones if it makes the code look cleaner, just make sure the tricky logic (like the chunking math, the chroma db setup, and the groq api calls) is explained really well.
+- **CoPilot Mode**: Edit
+- **CoPilot Model**: GPT-5.2-Codex
+- **Socratic Mode**: ON
+- **Changes Made**: Added beginner-focused comments across backend and frontend, emphasizing chunking math, ChromaDB setup, Groq API calls, and process flow.
+- **Context and Reasons for Changes**: Improve readability for a first-year capstone while avoiding redundant commentary in self-explanatory code.
+
+
+### **New Interaction**
+- **Hook Version**: 1.02
+- **Date**: 24-05-2026 23:15
+- **Prompt**: check the Report.md and see if everything aligns
