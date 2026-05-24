@@ -129,3 +129,6 @@
 ### 24-05-2026 23:04
 - **Prompt**: To make the code readable and understandable by everyone, simplify where possible and use detailed comments everywhere and anywhere necessary.
 
+### 24-05-2026 23:11
+- **Prompt**: let's do everything (backend and frontend). since this is for a 1st year capstone project, please make the comments aimed at beginners so my teammates and professor know exactly what every block is doing. and yeah, you can remove redundant ones if it makes the code look cleaner, just make sure the tricky logic (like the chunking math, the chroma db setup, and the groq api calls) is explained really well.
+

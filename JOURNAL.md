@@ -344,3 +344,19 @@
 - **Hook Version**: 1.02
 - **Date**: 24-05-2026 23:04
 - **Prompt**: To make the code readable and understandable by everyone, simplify where possible and use detailed comments everywhere and anywhere necessary.
+### **New Interaction**
+- **Agent Version**: 2.3
+- **Date**: 24-05-2026 23:05
+- **User**: justin.d-costa@epita.fr
+- **Prompt**: To make the code readable and understandable by everyone, simplify where possible and use detailed comments everywhere and anywhere necessary.
+- **CoPilot Mode**: Ask
+- **CoPilot Model**: GPT-5.2-Codex
+- **Socratic Mode**: ON
+- **Changes Made**: No code changes; requested scope and commenting preferences.
+- **Context and Reasons for Changes**: Need target files and acceptable commenting style to balance readability with maintainability.
+
+
+### **New Interaction**
+- **Hook Version**: 1.02
+- **Date**: 24-05-2026 23:11
+- **Prompt**: let's do everything (backend and frontend). since this is for a 1st year capstone project, please make the comments aimed at beginners so my teammates and professor know exactly what every block is doing. and yeah, you can remove redundant ones if it makes the code look cleaner, just make sure the tricky logic (like the chunking math, the chroma db setup, and the groq api calls) is explained really well.
