@@ -288,3 +288,22 @@
 - **Hook Version**: 1.02
 - **Date**: 24-05-2026 22:30
 - **Prompt**: 1. run main.py 2. polling `http://127.0.0.1:8000/ping` 3. wait infinitely and retry every 1 second(since it is useless without the backend) 4. keep both processes running in the terminal. use a try/except KeyboardInterrupt block so when i hit Ctrl+C, it cleanly terminates both the backend and the frontend.
+### **New Interaction**
+- **Agent Version**: 2.3
+- **Date**: 24-05-2026 22:30
+- **User**: justin.d-costa@epita.fr
+- **Prompt**: 1. run main.py
+2. polling `http://127.0.0.1:8000/ping`
+3. wait infinitely and retry every 1 second(since it is useless without the backend)
+4. keep both processes running in the terminal. use a try/except KeyboardInterrupt block so when i hit Ctrl+C, it cleanly terminates both the backend and the frontend.
+- **CoPilot Mode**: Edit
+- **CoPilot Model**: GPT-5.2-Codex
+- **Socratic Mode**: ON
+- **Changes Made**: Created start.py to orchestrate backend readiness and frontend startup.
+- **Context and Reasons for Changes**: Implemented a root-level launcher that starts the backend, polls /ping, then starts Streamlit, and cleans up both processes on Ctrl+C.
+
+
+### **New Interaction**
+- **Hook Version**: 1.02
+- **Date**: 24-05-2026 22:39
+- **Prompt**: Check for deep security flaws.

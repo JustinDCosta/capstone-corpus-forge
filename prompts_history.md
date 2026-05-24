@@ -117,3 +117,6 @@
 ### 24-05-2026 22:30
 - **Prompt**: 1. run main.py 2. polling `http://127.0.0.1:8000/ping` 3. wait infinitely and retry every 1 second(since it is useless without the backend) 4. keep both processes running in the terminal. use a try/except KeyboardInterrupt block so when i hit Ctrl+C, it cleanly terminates both the backend and the frontend.
 
+### 24-05-2026 22:39
+- **Prompt**: Check for deep security flaws.
+
