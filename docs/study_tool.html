@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Mastery Study Tool</title>
+<style>
+:root {
+  --bg: #0b1020;
+  --surface: rgba(16, 24, 40, 0.88);
+  --surface-2: rgba(21, 30, 50, 0.96);
+  --text: #eef2ff;
+  --muted: #a8b3cf;
+  --accent: #7dd3fc;
+  --accent-2: #a78bfa;
+  --success: #6ee7b7;
+  --warning: #fbbf24;
+  --danger: #fb7185;
+  --radius: 18px;
+  --shadow: 0 24px 80px rgba(0, 0, 0, 0.34);
+  --border: rgba(148, 163, 184, 0.18);
+  --font: "Avenir Next", "Segoe UI", "Trebuchet MS", sans-serif;
+  --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  font-family: var(--font);
+  background:
+    radial-gradient(circle at top left, rgba(125, 211, 252, 0.16), transparent 32%),
+    radial-gradient(circle at 85% 15%, rgba(167, 139, 250, 0.16), transparent 30%),
+    linear-gradient(180deg, #08101f 0%, #0b1020 45%, #060a14 100%);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 44px 44px;
+  opacity: 0.25;
+}
+a { color: inherit; }
+button, input, select {
+  font: inherit;
+}
+#app {
+  width: min(1220px, calc(100% - 28px));
+  margin: 0 auto;
+  padding: 22px 0 56px;
+}
+.section {
+  background: var(--surface);
+  backdrop-filter: blur(14px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 18px;
+  overflow: clip;
+}
+header.section {
+  padding: 24px 24px 22px;
+}
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+.kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(125, 211, 252, 0.12);
+  color: var(--accent);
+  border: 1px solid rgba(125, 211, 252, 0.22);
+  font-size: 0.82rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+.title-row h1 {
+  margin: 10px 0 8px;
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  line-height: 1.05;
+}
+.title-row p {
+  margin: 0;
+  color: var(--muted);
+  max-width: 72ch;
+}
+.meta-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  min-width: min(380px, 100%);
+}
+.meta-card {
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+}
+.meta-label {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+.meta-value {
+  margin-top: 3px;
+  font-weight: 700;
+  color: var(--text);
+}
+#study-summary, #mode-switcher, #flashcards, #quiz, #results {
+  padding: 22px 24px;
+}
+.section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.section-head h2 {
+  margin: 0;
+  font-size: 1.35rem;
+}
+.section-head p {
+  margin: 0;
+  color: var(--muted);
+}
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+.summary-card, .panel-card, .result-card, .flashcard, .question-card {
+  background: var(--surface-2);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 18px;
+}
+.summary-card {
+  padding: 16px;
+  min-height: 160px;
+}
+.summary-card h3 {
+  margin: 0 0 10px;
+  font-size: 1rem;
+}
+.summary-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+.summary-pill {
+  display: inline-flex;
+  margin-bottom: 10px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  background: rgba(167, 139, 250, 0.13);
+  color: #ddd6fe;
+  border: 1px solid rgba(167, 139, 250, 0.24);
+}
+.mode-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+}
+.mode-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.mode-button, .nav-button, .answer-button, .retry-button {
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: transform 150ms ease, background 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
+}
+.mode-button {
+  padding: 12px 16px;
+  color: var(--text);
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+}
+.mode-button:hover, .nav-button:hover, .answer-button:hover, .retry-button:hover {
+  transform: translateY(-1px);
+}
+.mode-button.is-active {
+  background: linear-gradient(135deg, rgba(125, 211, 252, 0.2), rgba(167, 139, 250, 0.2));
+  border-color: rgba(125, 211, 252, 0.38);
+  box-shadow: 0 0 0 1px rgba(125, 211, 252, 0.1) inset;
+}
+.mode-note {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+.flashcard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+}
+.flashcard {
+  position: relative;
+  min-height: 230px;
+  perspective: 1200px;
+}
+.flashcard:focus-visible,
+.answer-button:focus-visible,
+.nav-button:focus-visible,
+.mode-button:focus-visible,
+.retry-button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.flashcard-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 230px;
+  transform-style: preserve-3d;
+  transition: transform 520ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.flashcard.is-flipped .flashcard-inner {
+  transform: rotateY(180deg);
+}
+.flashcard-face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px;
+  border-radius: 18px;
+  backface-visibility: hidden;
+  overflow: hidden;
+}
+.flashcard-front {
+  background: linear-gradient(180deg, rgba(17, 24, 39, 0.98), rgba(12, 19, 34, 0.96));
+}
+.flashcard-back {
+  transform: rotateY(180deg);
+  background: linear-gradient(180deg, rgba(18, 28, 52, 0.98), rgba(11, 18, 36, 0.96));
+}
+.card-badge, .source-badge {
+  display: inline-flex;
+  width: fit-content;
+  padding: 5px 9px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+}
+.card-badge { background: rgba(125, 211, 252, 0.13); color: #bae6fd; }
+.source-badge { background: rgba(167, 139, 250, 0.13); color: #ddd6fe; }
+.flashcard h3, .question-card h3 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+.flashcard p, .question-card p, .result-card p {
+  margin: 0;
+  color: var(--muted);
+}
+.flashcard .back-text {
+  color: var(--text);
+}
+.flashcard .footer, .question-footer, .answer-line {
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+.quiz-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(280px, 0.8fr);
+  gap: 16px;
+  align-items: start;
+}
+.quiz-column {
+  min-width: 0;
+}
+.quiz-stage {
+  display: grid;
+  gap: 14px;
+}
+.question-card {
+  padding: 18px;
+  display: none;
+}
+.question-card.is-active {
+  display: block;
+}
+.question-topline {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.question-index {
+  color: var(--accent);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.question-type {
+  color: #c4b5fd;
+  font-size: 0.8rem;
+  padding: 5px 9px;
+  border-radius: 999px;
+  border: 1px solid rgba(167, 139, 250, 0.24);
+  background: rgba(167, 139, 250, 0.1);
+}
+.question-prompt {
+  margin: 10px 0 14px;
+  color: var(--text);
+  font-size: 1.02rem;
+}
+.quiz-options {
+  display: grid;
+  gap: 10px;
+}
+.answer-button {
+  width: 100%;
+  text-align: left;
+  padding: 13px 14px;
+  background: rgba(255,255,255,0.05);
+  color: var(--text);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+}
+.answer-button.is-selected {
+  border-color: rgba(125, 211, 252, 0.45);
+  background: rgba(125, 211, 252, 0.12);
+}
+.answer-button.is-correct {
+  border-color: rgba(110, 231, 183, 0.5);
+  background: rgba(110, 231, 183, 0.14);
+}
+.answer-button.is-wrong {
+  border-color: rgba(251, 113, 133, 0.5);
+  background: rgba(251, 113, 133, 0.12);
+}
+.answer-button[disabled] {
+  cursor: default;
+  opacity: 0.95;
+}
+.quiz-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+.nav-left, .nav-right {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.nav-button, .retry-button {
+  padding: 12px 16px;
+  background: rgba(255,255,255,0.07);
+  color: var(--text);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+}
+.nav-button.primary, .retry-button {
+  background: linear-gradient(135deg, rgba(125, 211, 252, 0.26), rgba(167, 139, 250, 0.24));
+  border-color: rgba(125, 211, 252, 0.34);
+}
+.nav-button[disabled], .answer-button[disabled] {
+  opacity: 0.56;
+  cursor: not-allowed;
+}
+.progress-row {
+  margin-top: 12px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.progress-bar {
+  flex: 1;
+  height: 10px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+}
+.progress-bar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  width: 0%;
+  transition: width 220ms ease;
+}
+.quiz-results {
+  display: grid;
+  gap: 12px;
+}
+.result-card {
+  padding: 18px;
+}
+.result-score {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.score-number {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 800;
+  color: #e0f2fe;
+}
+.score-caption {
+  color: var(--muted);
+}
+.review-list {
+  display: grid;
+  gap: 10px;
+}
+.review-item {
+  padding: 14px 14px 12px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+}
+.review-item strong {
+  color: var(--text);
+}
+.review-item .review-meta {
+  color: var(--muted);
+  font-size: 0.82rem;
+  margin-bottom: 8px;
+}
+.review-item .review-answer {
+  color: var(--text);
+  font-size: 0.95rem;
+}
+.review-item .review-explanation {
+  margin-top: 8px;
+  color: var(--muted);
+}
+.hidden {
+  display: none !important;
+}
+.note-inline {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+.badge-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  color: var(--text);
+  font-size: 0.8rem;
+}
+#results-panel {
+  color: var(--text);
+}
+@media (max-width: 1020px) {
+  .summary-grid, .meta-grid, .quiz-shell {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 700px) {
+  #app { width: min(100% - 18px, 1220px); padding-top: 10px; }
+  header.section, #study-summary, #mode-switcher, #flashcards, #quiz, #results { padding: 18px 16px; }
+  .flashcard-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<main id="app">
+  <header class="section" id="header">
+    <div class="header-top">
+      <div class="title-row">
+        <span class="kicker">Project Mastery Study Tool</span>
+        <h1>Corpus Forge Flash Quiz Site</h1>
+        <p>
+          Built from the Python code in the project root, using the current architecture after the backend/frontend split.
+          Default mode is <strong>Medium</strong> with <strong>15</strong> quiz questions, and you can ask for a different difficulty or question count later.
+        </p>
+      </div>
+      <div class="meta-grid">
+        <div class="meta-card">
+          <div class="meta-label">Template version</div>
+          <div class="meta-value">2.0</div>
+        </div>
+        <div class="meta-card">
+          <div class="meta-label">Difficulty</div>
+          <div class="meta-value">Medium</div>
+        </div>
+        <div class="meta-card">
+          <div class="meta-label">Questions</div>
+          <div class="meta-value">15</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section id="study-summary" class="section">
+    <div class="section-head">
+      <div>
+        <h2>Study Summary</h2>
+        <p>These are the main technical themes found in the project code.</p>
+      </div>
+      <div class="badge-row">
+        <span class="badge">FastAPI backend</span>
+        <span class="badge">Streamlit frontend</span>
+        <span class="badge">Local ChromaDB</span>
+        <span class="badge">Groq LLM calls</span>
+      </div>
+    </div>
+    <div class="summary-grid">
+      <article class="summary-card">
+        <span class="summary-pill">Architecture</span>
+        <h3>Thin launcher, packaged backend</h3>
+        <p>
+          <code>main.py</code> only boots Uvicorn, <code>start.py</code> waits for <code>/ping</code>, and the real backend logic lives in the <code>app/</code> package.
+        </p>
+      </article>
+      <article class="summary-card">
+        <span class="summary-pill">Data flow</span>
+        <h3>Upload, extract, chunk, store, query</h3>
+        <p>
+          The ingestion path streams uploads to a temp file, extracts text with PyMuPDF or plain text readers, chunks content with overlap, and saves vectors in ChromaDB.
+        </p>
+      </article>
+      <article class="summary-card">
+        <span class="summary-pill">Generation</span>
+        <h3>Chat, quiz, flashcards, code review</h3>
+        <p>
+          The backend feeds a selected document or full corpus context into Groq and expects structured JSON for the study features.
+        </p>
+      </article>
+      <article class="summary-card">
+        <span class="summary-pill">Safety</span>
+        <h3>Hardening and cleanup</h3>
+        <p>
+          The code enforces a file size cap, sanitizes filenames, cleans up temp files, and optionally checks an API key and CORS allowlist.
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <section id="mode-switcher" class="section">
+    <div class="mode-row">
+      <div>
+        <h2 style="margin:0 0 6px;">Mode Switcher</h2>
+        <div class="mode-note">Jump to the flashcards, quiz, or results. The page loads both study modes up front.</div>
+      </div>
+      <div class="mode-buttons">
+        <button class="mode-button is-active" type="button" data-target="flashcards">Flashcards</button>
+        <button class="mode-button" type="button" data-target="quiz">Quiz</button>
+        <button class="mode-button" type="button" data-target="results">Results</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="flashcards" class="section">
+    <div class="section-head">
+      <div>
+        <h2>Flashcards</h2>
+        <p>Click or press Enter/Space to flip a card.</p>
+      </div>
+      <div class="note-inline">10 evidence-based cards drawn from the project code.</div>
+    </div>
+    <div id="flashcard-grid" class="flashcard-grid"></div>
+  </section>
+
+  <section id="quiz" class="section">
+    <div class="section-head">
+      <div>
+        <h2>Quiz</h2>
+        <p>One point per question. Navigate with the buttons or answer directly on the current card.</p>
+      </div>
+      <div class="note-inline">15 questions: trace, debug, tradeoff, edge case, and Big-O.</div>
+    </div>
+    <div class="quiz-shell">
+      <div class="quiz-column">
+        <div id="quiz-content" class="quiz-stage"></div>
+        <div class="quiz-nav"></div>
+        <div class="progress-row">
+          <div class="progress-bar" aria-hidden="true"><span id="quiz-progress-bar"></span></div>
+          <div id="quiz-progress-label">Question 1 of 15</div>
+        </div>
+      </div>
+      <aside class="panel-card" style="padding:16px;">
+        <div class="section-head" style="margin-bottom:12px;">
+          <div>
+            <h2 style="font-size:1.1rem;margin:0;">How grading works</h2>
+          </div>
+        </div>
+        <p style="margin:0 0 10px;color:var(--muted);">
+          The quiz uses the code itself as evidence. Every answer refers back to a specific file and symbol, so the questions stay tied to the actual implementation.
+        </p>
+        <div class="badge-row">
+          <span class="badge">Behavior tracing</span>
+          <span class="badge">Debugging</span>
+          <span class="badge">Tradeoffs</span>
+          <span class="badge">Robustness</span>
+          <span class="badge">Big-O</span>
+        </div>
+      </aside>
+    </div>
+    <div id="quiz-results" class="quiz-results"></div>
+  </section>
+
+  <section id="results" class="section">
+    <div class="section-head">
+      <div>
+        <h2>Results</h2>
+        <p>After submission, this section mirrors your score and review breakdown.</p>
+      </div>
+      <div class="note-inline">The score appears here and in the quiz section.</div>
+    </div>
+    <div id="results-panel">
+      <div class="result-card">
+        <p>Submit the quiz to see your score, correct answers, and short explanations.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+const STUDY_TOOL_TEMPLATE_VERSION = "2.0";
+const STUDY_DIFFICULTY = "Medium";
+const QUESTION_COUNT = 15;
+
+const flashcards = [
+  {
+    id: "fc-0",
+    file: "main.py",
+    anchor: "uvicorn.run(\"main:app\", host=\"0.0.0.0\", port=8000, reload=True)",
+    front: "What is the role of main.py in this project?",
+    back: "It is a thin Uvicorn entry point. It imports the FastAPI app from app/__init__.py and starts the server, instead of hosting business logic itself.",
+    explanation: "This keeps startup code separate from the actual API implementation.",
+    kind: "architecture"
+  },
+  {
+    id: "fc-1",
+    file: "start.py",
+    anchor: "wait_for_backend() + is_backend_ready()",
+    front: "Why does start.py poll /ping before launching Streamlit?",
+    back: "It waits until the backend is actually ready so the frontend does not start first and fail to connect. The launcher keeps both processes alive and cleans them up on Ctrl+C.",
+    explanation: "The launcher makes startup more reliable for local development.",
+    kind: "runtime"
+  },
+  {
+    id: "fc-2",
+    file: "app/config.py",
+    anchor: "GROQ_API_KEY, ALLOWED_ORIGINS, API_KEY, MAX_UPLOAD_BYTES",
+    front: "Which runtime settings does app/config.py centralize?",
+    back: "It loads environment values for Groq, optional API-key auth, CORS origins, and the 10 MB upload cap. This keeps security-sensitive settings in one place.",
+    explanation: "Configuration belongs in one module instead of being scattered through routes.",
+    kind: "configuration"
+  },
+  {
+    id: "fc-3",
+    file: "app/db.py",
+    anchor: "chromadb.PersistentClient(path=\"./chroma_db\")",
+    front: "What does the database module set up?",
+    back: "A persistent ChromaDB client, a Sentence Transformer embedding function, and one shared collection for all stored document chunks.",
+    explanation: "The vector store lives locally and survives restarts.",
+    kind: "storage"
+  },
+  {
+    id: "fc-4",
+    file: "app/utils.py",
+    anchor: "chunk_text(text, chunk_size=1000, overlap=200)",
+    front: "Why does chunk_text use overlap?",
+    back: "Overlap preserves context across chunk boundaries so the backend does not cut important sentences in half right where the model needs them.",
+    explanation: "The overlap is a simple way to keep related text together.",
+    kind: "text-processing"
+  },
+  {
+    id: "fc-5",
+    file: "app/utils.py",
+    anchor: "extract_text_from_file(file_path, filename)",
+    front: "How does the extractor treat PDFs differently from plain text files?",
+    back: "Plain text formats are read directly with UTF-8. PDFs are opened with PyMuPDF, page text is collected, and an empty image-only PDF triggers a 400 error.",
+    explanation: "The file type decides which parser runs.",
+    kind: "parsing"
+  },
+  {
+    id: "fc-6",
+    file: "app/routes.py",
+    anchor: "tempfile.NamedTemporaryFile(delete=False, suffix=f\".{extension}\")",
+    front: "Why does upload_document stream uploads to a temp file?",
+    back: "PyMuPDF needs a path on disk, so the upload is written to a temporary file first and deleted in a finally block even if extraction fails.",
+    explanation: "This avoids keeping the upload in memory and helps guarantee cleanup.",
+    kind: "security"
+  },
+  {
+    id: "fc-7",
+    file: "app/routes.py",
+    anchor: "collection.query(query_texts=[query], n_results=3, where={\"filename\": filename})",
+    front: "What changes when chat receives a filename?",
+    back: "The query is filtered to chunks from that specific document instead of searching the entire corpus. Without a filename, the backend searches across all chunks.",
+    explanation: "The selected sidebar document narrows the retrieval scope.",
+    kind: "retrieval"
+  },
+  {
+    id: "fc-8",
+    file: "app/routes.py",
+    anchor: "response_format={\"type\": \"json_object\"}",
+    front: "Why do quiz and flashcard generation requests force JSON output?",
+    back: "The backend asks Groq for strict JSON so the frontend can parse the response reliably without guessing where the content starts or ends.",
+    explanation: "Structured output keeps the study UI predictable.",
+    kind: "generation"
+  },
+  {
+    id: "fc-9",
+    file: "frontend.py",
+    anchor: "st.session_state['documents'], st.session_state['metrics'], selected_document",
+    front: "What does the Streamlit sidebar cache?",
+    back: "It caches the document list and metrics, and it stores the selected document so Chat, Quiz, Flashcards, and Code Review all use the same current file.",
+    explanation: "Session state avoids repeated fetches and keeps the UI coordinated.",
+    kind: "frontend"
+  }
+];
+
+const quizData = [
+  {
+    id: "q-0",
+    kind: "behavior tracing",
+    file: "start.py",
+    anchor: "wait_for_backend() + is_backend_ready()",
+    question: "When start.py runs, what has to happen before Streamlit is launched?",
+    options: [
+      "The backend must reply 200 to /ping.",
+      "The ChromaDB collection must be empty.",
+      "The frontend must already be open.",
+      "The API key must be disabled."
+    ],
+    correctIndex: 0,
+    explanation: "start.py keeps polling /ping until the backend is ready, then it starts Streamlit."
+  },
+  {
+    id: "q-1",
+    kind: "behavior tracing",
+    file: "frontend.py",
+    anchor: "upload_document(uploaded_file) -> st.session_state['documents'] = fetch_documents()",
+    question: "After a successful upload, what does the Streamlit sidebar refresh?",
+    options: [
+      "The selected document only.",
+      "The metrics counter only.",
+      "The cached document list in session state.",
+      "The quiz answers already chosen."
+    ],
+    correctIndex: 2,
+    explanation: "upload_document calls fetch_documents() after a successful POST so the sidebar list stays current."
+  },
+  {
+    id: "q-2",
+    kind: "behavior tracing",
+    file: "app/routes.py",
+    anchor: "collection.query(..., where={\"filename\": filename})",
+    question: "What changes in chat_with_corpus when a filename is sent from the frontend?",
+    options: [
+      "The backend ignores the query and returns a random chunk.",
+      "The query is limited to chunks whose metadata filename matches.",
+      "The backend bypasses ChromaDB and queries Groq directly.",
+      "The upload limit is raised to 24,000 bytes."
+    ],
+    correctIndex: 1,
+    explanation: "The optional filename makes retrieval narrower, so the answer comes from one selected document instead of the whole corpus."
+  },
+  {
+    id: "q-3",
+    kind: "behavior tracing",
+    file: "app/routes.py",
+    anchor: "save_artifact(filename, quiz, \"quiz\")",
+    question: "What happens if saving a generated quiz artifact fails on disk?",
+    options: [
+      "The whole request fails immediately.",
+      "The backend retries forever.",
+      "The generated quiz still returns to the client.",
+      "The result is converted into plain text."
+    ],
+    correctIndex: 2,
+    explanation: "Artifact saving is wrapped in its own try/except, so the request still returns the generated JSON."
+  },
+  {
+    id: "q-4",
+    kind: "debugging",
+    file: "app/routes.py",
+    anchor: "if total_bytes > MAX_UPLOAD_BYTES: raise HTTPException(status_code=413, ...)",
+    question: "If an upload is bigger than the allowed limit, what is the first visible failure?",
+    options: [
+      "A 413 HTTP error during the streaming write loop.",
+      "A 404 error from get_document_context.",
+      "A JSON decode error in the frontend.",
+      "A CORS preflight rejection."
+    ],
+    correctIndex: 0,
+    explanation: "The upload loop counts bytes as it streams the file and raises 413 once MAX_UPLOAD_BYTES is exceeded."
+  },
+  {
+    id: "q-5",
+    kind: "debugging",
+    file: "app/routes.py",
+    anchor: "if extension not in ['txt', 'md', 'pdf', 'py', 'js']",
+    question: "What rejects unsupported uploads before the temp file is processed?",
+    options: [
+      "The extension allowlist near the top of upload_document.",
+      "The Groq response_format flag.",
+      "The delete_document route.",
+      "The metrics counter dictionary."
+    ],
+    correctIndex: 0,
+    explanation: "The upload route checks the extension against the allowed list before calling the extractor."
+  },
+  {
+    id: "q-6",
+    kind: "debugging",
+    file: "app/utils.py",
+    anchor: "raise HTTPException(status_code=404, detail=f\"No data found in DB for {filename}\")",
+    question: "If get_document_context cannot find a filename, what does the generation endpoint receive?",
+    options: [
+      "A 404 HTTPException.",
+      "A 500 from the embedding model.",
+      "An empty quiz object.",
+      "A duplicate artifact warning."
+    ],
+    correctIndex: 0,
+    explanation: "The helper raises 404 when the requested filename has no stored chunks, which stops quiz/flashcard/code-review generation."
+  },
+  {
+    id: "q-7",
+    kind: "design tradeoff",
+    file: "main.py + app/",
+    anchor: "main.py imports app and starts Uvicorn",
+    question: "Why is the project split into app/config.py, app/db.py, app/utils.py, and app/routes.py instead of one monolithic file?",
+    options: [
+      "It makes the backend slower but shorter.",
+      "It separates concerns so each file owns one job.",
+      "It removes the need for FastAPI.",
+      "It prevents all runtime errors automatically."
+    ],
+    correctIndex: 1,
+    explanation: "The package split keeps configuration, storage, utilities, and routes easier to understand and maintain."
+  },
+  {
+    id: "q-8",
+    kind: "design tradeoff",
+    file: "app/utils.py",
+    anchor: "chunk_text(text, chunk_size=1000, overlap=200)",
+    question: "Why does the chunking helper use overlap instead of plain back-to-back chunks?",
+    options: [
+      "It removes the need to store chunks.",
+      "It keeps context that might otherwise be split across a boundary.",
+      "It guarantees the model will never hallucinate.",
+      "It makes every document shorter on disk."
+    ],
+    correctIndex: 1,
+    explanation: "Overlap gives the next chunk the start of any sentence that was cut at the previous boundary."
+  },
+  {
+    id: "q-9",
+    kind: "design tradeoff",
+    file: "app/routes.py",
+    anchor: "response_format={\"type\": \"json_object\"}",
+    question: "Why is Groq asked for strict JSON in quiz and flashcard generation?",
+    options: [
+      "So the frontend can parse a predictable schema instead of free-form text.",
+      "So the upload endpoint runs faster.",
+      "So ChromaDB does not need embeddings.",
+      "So the API key is not required anymore."
+    ],
+    correctIndex: 0,
+    explanation: "The frontend expects structured data, so JSON output is more reliable than a conversational response."
+  },
+  {
+    id: "q-10",
+    kind: "edge case / robustness",
+    file: "app/routes.py",
+    anchor: "sanitize_filename(name) + Path(name).name",
+    question: "What safety measure stops path traversal when saving or loading artifact names?",
+    options: [
+      "Using Path(name).name and a regex to replace unsafe characters.",
+      "Running the file through PyMuPDF first.",
+      "Sorting the filenames alphabetically.",
+      "Adding a bigger overlap in chunk_text."
+    ],
+    correctIndex: 0,
+    explanation: "The route strips directory components and cleans unsafe characters before using the name on disk."
+  },
+  {
+    id: "q-11",
+    kind: "edge case / robustness",
+    file: "frontend.py",
+    anchor: "if documents: ... else: st.sidebar.info('No documents found yet.')",
+    question: "What does the sidebar do when the backend returns no documents?",
+    options: [
+      "It crashes because selectbox has no choices.",
+      "It shows an info message instead of rendering document controls.",
+      "It auto-generates a sample document.",
+      "It disables the backend entirely."
+    ],
+    correctIndex: 1,
+    explanation: "The sidebar handles the empty state explicitly and avoids rendering the document selector."
+  },
+  {
+    id: "q-12",
+    kind: "edge case / robustness",
+    file: "frontend.py",
+    anchor: "if not filename.lower().endswith((\".py\", \".js\"))",
+    question: "Why is the Code Review tab limited to .py and .js files?",
+    options: [
+      "Those are the only files the backend can upload.",
+      "They are the only file types where a code review makes sense in this project.",
+      "The selectbox cannot display other extensions.",
+      "Groq refuses to read any other language."
+    ],
+    correctIndex: 1,
+    explanation: "The tab is intentionally scoped to code files, while PDFs and text documents are better suited to chat, quiz, and flashcards."
+  },
+  {
+    id: "q-13",
+    kind: "Big-O",
+    file: "app/utils.py",
+    anchor: "while start < len(text): ... start += chunk_size - overlap",
+    question: "What is the time complexity of chunk_text relative to the input length n?",
+    options: [
+      "O(n)",
+      "O(log n)",
+      "O(n^2)",
+      "O(1)"
+    ],
+    correctIndex: 0,
+    explanation: "The loop walks through the text once, slicing the string into overlapping pieces in linear time."
+  },
+  {
+    id: "q-14",
+    kind: "Big-O",
+    file: "app/routes.py",
+    anchor: "unique_files = list(set([meta['filename'] for meta in data['metadatas'] if meta]))",
+    question: "What is the time complexity of collecting the unique document list from the metadata array?",
+    options: [
+      "O(n)",
+      "O(n log n)",
+      "O(n^2)",
+      "O(1)"
+    ],
+    correctIndex: 0,
+    explanation: "The code scans the metadata once, inserts names into a set, and then turns the set into a list."
+  }
+];
+
+const state = {
+  currentQuestion: 0,
+  selectedAnswers: Array(QUESTION_COUNT).fill(null),
+  submitted: false
+};
+
+const elements = {
+  flashcardGrid: document.getElementById("flashcard-grid"),
+  quizContent: document.getElementById("quiz-content"),
+  quizNav: document.querySelector(".quiz-nav"),
+  quizResults: document.getElementById("quiz-results"),
+  resultsPanel: document.getElementById("results-panel"),
+  progressBar: document.getElementById("quiz-progress-bar"),
+  progressLabel: document.getElementById("quiz-progress-label")
+};
+
+function buildFlashcards() {
+  elements.flashcardGrid.innerHTML = flashcards.map((card, index) => `
+    <article class="flashcard" id="flashcard-${index}" tabindex="0" role="button" aria-pressed="false" aria-label="Flip flashcard ${index + 1}">
+      <div class="flashcard-inner">
+        <div class="flashcard-face flashcard-front">
+          <span class="card-badge">Flashcard ${index + 1}</span>
+          <h3>${escapeHtml(card.front)}</h3>
+          <p>Tap or press Enter/Space to see the answer.</p>
+          <div class="footer">
+            <span class="source-badge">${escapeHtml(card.file)}</span>
+            <span>${escapeHtml(card.kind)}</span>
+          </div>
+        </div>
+        <div class="flashcard-face flashcard-back">
+          <span class="card-badge">Back</span>
+          <h3>${escapeHtml(card.back)}</h3>
+          <p class="back-text">${escapeHtml(card.explanation)}</p>
+          <div class="footer">
+            <span class="source-badge">${escapeHtml(card.anchor)}</span>
+            <span>${escapeHtml(card.file)}</span>
+          </div>
+        </div>
+      </div>
+    </article>
+  `).join("");
+
+  flashcards.forEach((_, index) => {
+    const card = document.getElementById(`flashcard-${index}`);
+    const toggle = () => {
+      card.classList.toggle("is-flipped");
+      card.setAttribute("aria-pressed", String(card.classList.contains("is-flipped")));
+    };
+    card.addEventListener("click", toggle);
+    card.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        toggle();
+      }
+    });
+  });
+}
+
+function initializeQuizDOM() {
+  elements.quizContent.innerHTML = quizData.map((item, index) => `
+    <article class="question-card" id="${item.id}" data-question-index="${index}">
+      <div class="question-topline">
+        <span class="question-index">Question ${index + 1} of ${QUESTION_COUNT}</span>
+        <span class="question-type">${escapeHtml(item.kind)}</span>
+      </div>
+      <h3>${escapeHtml(item.question)}</h3>
+      <p class="note-inline" style="margin-top:8px;">Source: ${escapeHtml(item.file)} :: ${escapeHtml(item.anchor)}</p>
+      <div class="quiz-options" data-options-for="${index}">
+        ${item.options.map((option, optionIndex) => `
+          <button class="answer-button" type="button" data-question-index="${index}" data-answer-index="${optionIndex}">${escapeHtml(option)}</button>
+        `).join("")}
+      </div>
+      <div class="question-footer">
+        <span>${item.kind}</span>
+        <span>1 point</span>
+      </div>
+    </article>
+  `).join("");
+
+  quizData.forEach((item, index) => {
+    const questionNode = document.getElementById(item.id);
+    questionNode.querySelectorAll(".answer-button").forEach((button) => {
+      button.addEventListener("click", () => selectAnswer(index, Number(button.dataset.answerIndex)));
+    });
+  });
+
+  updateQuizView();
+}
+
+function validateStudyToolDOM() {
+  const requiredIds = ["quiz-content", "quiz-results", "results-panel", "flashcard-grid"];
+  const missing = requiredIds.filter((id) => !document.getElementById(id));
+  const flashcardNodes = [...document.querySelectorAll(".flashcard")];
+  const missingFlashcardFaces = flashcardNodes.filter((card) => !card.querySelector(".flashcard-front") || !card.querySelector(".flashcard-back"));
+  const missingQuestions = quizData.filter((item) => !document.getElementById(item.id));
+
+  if (missing.length || missingFlashcardFaces.length || missingQuestions.length) {
+    console.error("Study tool DOM validation failed", {
+      missingIds: missing,
+      missingFlashcardFaces: missingFlashcardFaces.map((card) => card.id),
+      missingQuestionIds: missingQuestions.map((item) => item.id)
+    });
+    return false;
+  }
+  return true;
+}
+
+function selectAnswer(questionIndex, answerIndex) {
+  if (state.submitted) return;
+  state.selectedAnswers[questionIndex] = answerIndex;
+  renderQuestion(questionIndex);
+  updateQuizView();
+}
+
+function renderQuestion(questionIndex) {
+  const questionNode = document.getElementById(`q-${questionIndex}`);
+  const item = quizData[questionIndex];
+  const selected = state.selectedAnswers[questionIndex];
+  const buttons = [...questionNode.querySelectorAll(".answer-button")];
+
+  buttons.forEach((button, index) => {
+    button.classList.toggle("is-selected", selected === index);
+    button.classList.remove("is-correct", "is-wrong");
+
+    if (state.submitted) {
+      button.disabled = true;
+      if (index === item.correctIndex) {
+        button.classList.add("is-correct");
+      } else if (selected === index && selected !== item.correctIndex) {
+        button.classList.add("is-wrong");
+      }
+    } else {
+      button.disabled = false;
+    }
+  });
+}
+
+function updateQuizView() {
+  quizData.forEach((_, index) => {
+    const node = document.getElementById(`q-${index}`);
+    node.classList.toggle("is-active", index === state.currentQuestion);
+  });
+
+  quizData.forEach((_, index) => renderQuestion(index));
+  updateQuizNav();
+  updateProgress();
+}
+
+function updateQuizNav() {
+  const isFirst = state.currentQuestion === 0;
+  const isLast = state.currentQuestion === quizData.length - 1;
+  const currentSelected = state.selectedAnswers[state.currentQuestion] !== null;
+
+  elements.quizNav.innerHTML = `
+    <div class="nav-left">
+      <button class="nav-button" type="button" id="prev-question" ${isFirst ? "disabled" : ""}>Previous</button>
+      <button class="nav-button" type="button" id="next-question" ${state.submitted ? "disabled" : ""}>${isLast ? "Review" : "Next"}</button>
+    </div>
+    <div class="nav-right">
+      <button class="nav-button primary" type="button" id="submit-quiz" ${state.submitted ? "disabled" : ""}>${isLast ? "Submit Quiz" : "Save Answer"}</button>
+      <button class="nav-button" type="button" id="retake-quiz" ${state.submitted ? "" : "disabled"}>Retake</button>
+    </div>
+  `;
+
+  const prevButton = document.getElementById("prev-question");
+  const nextButton = document.getElementById("next-question");
+  const submitButton = document.getElementById("submit-quiz");
+  const retakeButton = document.getElementById("retake-quiz");
+
+  prevButton.addEventListener("click", prevQuestion);
+  nextButton.addEventListener("click", nextQuestion);
+  submitButton.addEventListener("click", submitQuiz);
+  retakeButton.addEventListener("click", resetQuiz);
+
+  if (!state.submitted) {
+    submitButton.textContent = isLast ? "Submit Quiz" : currentSelected ? "Save Answer" : "Skip for now";
+  }
+}
+
+function updateProgress() {
+  const answered = state.selectedAnswers.filter((item) => item !== null).length;
+  const progress = ((state.currentQuestion + 1) / quizData.length) * 100;
+  elements.progressBar.style.width = `${progress}%`;
+  elements.progressLabel.textContent = `Question ${state.currentQuestion + 1} of ${quizData.length} · ${answered}/${quizData.length} answered`;
+}
+
+function nextQuestion() {
+  if (state.submitted) return;
+  state.currentQuestion = Math.min(state.currentQuestion + 1, quizData.length - 1);
+  updateQuizView();
+}
+
+function prevQuestion() {
+  if (state.submitted) return;
+  state.currentQuestion = Math.max(state.currentQuestion - 1, 0);
+  updateQuizView();
+}
+
+function submitQuiz() {
+  state.submitted = true;
+  updateQuizView();
+
+  const score = quizData.reduce((total, item, index) => total + (state.selectedAnswers[index] === item.correctIndex ? 1 : 0), 0);
+  const missed = quizData.length - score;
+  const summaryHtml = `
+    <div class="result-card">
+      <div class="result-score">
+        <div>
+          <div class="score-number">${score} / ${quizData.length}</div>
+          <div class="score-caption">${missed === 0 ? "Perfect score." : `${missed} question${missed === 1 ? "" : "s"} need another look.`}</div>
+        </div>
+        <button class="retry-button results-retake" type="button">Retake Quiz</button>
+      </div>
+      <p>Answers are shown below with the correct option and a short explanation tied to the code.</p>
+    </div>
+    <div class="result-card">
+      <div class="review-list">
+        ${quizData.map((item, index) => {
+          const selected = state.selectedAnswers[index];
+          const chosenText = selected === null ? "No answer selected" : item.options[selected];
+          const correctText = item.options[item.correctIndex];
+          const correct = selected === item.correctIndex;
+          return `
+            <div class="review-item">
+              <div class="review-meta">${item.file} :: ${item.anchor}</div>
+              <div class="review-answer"><strong>Q${index + 1}.</strong> ${escapeHtml(item.question)}</div>
+              <div class="review-answer">Your answer: <strong style="color:${correct ? 'var(--success)' : 'var(--danger)'}">${escapeHtml(chosenText)}</strong></div>
+              <div class="review-answer">Correct answer: <strong>${escapeHtml(correctText)}</strong></div>
+              <div class="review-explanation">${escapeHtml(item.explanation)}</div>
+            </div>
+          `;
+        }).join("")}
+      </div>
+    </div>
+  `;
+
+  elements.quizResults.innerHTML = summaryHtml;
+  elements.resultsPanel.innerHTML = summaryHtml;
+  document.querySelectorAll(".results-retake").forEach((button) => {
+    button.addEventListener("click", resetQuiz);
+  });
+}
+
+function resetQuiz() {
+  state.currentQuestion = 0;
+  state.submitted = false;
+  state.selectedAnswers = Array(QUESTION_COUNT).fill(null);
+  elements.quizResults.innerHTML = "";
+  elements.resultsPanel.innerHTML = '<div class="result-card"><p>Submit the quiz to see your score, correct answers, and short explanations.</p></div>';
+  updateQuizView();
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function scrollToSection(id) {
+  const target = document.getElementById(id);
+  target.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function wireModeSwitcher() {
+  document.querySelectorAll(".mode-button").forEach((button) => {
+    button.addEventListener("click", () => {
+      document.querySelectorAll(".mode-button").forEach((item) => item.classList.remove("is-active"));
+      button.classList.add("is-active");
+      scrollToSection(button.dataset.target);
+    });
+  });
+}
+
+buildFlashcards();
+initializeQuizDOM();
+wireModeSwitcher();
+const domOk = validateStudyToolDOM();
+if (!domOk) {
+  console.error("Study tool initialization completed with missing nodes.");
+}
+</script>
+</body>
+</html>

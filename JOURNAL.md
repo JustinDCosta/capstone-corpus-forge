@@ -424,3 +424,14 @@ Update Readme.md to be in synce with the changes made. Also add/edit instruction
 - **Hook Version**: 1.02
 - **Date**: 27-05-2026 17:38
 - **Prompt**: generate the flash quiz site and put it in the docs folder
+
+### **New Interaction**
+- **Hook Version**: 1.02
+- **Date**: 27-05-2026 17:40
+- **User**: justin.d-costa@epita.fr
+- **Prompt**: generate the flash quiz site and put it in the docs folder
+- **CoPilot Mode**: Agent
+- **CoPilot Model**: GPT-5.4 mini
+- **Socratic Mode**: OFF
+- **Changes Made**: Created `docs/study_tool.html` as a self-contained flash quiz site with flashcards, a 15-question quiz, results handling, runtime DOM validation, and the required study summary and mode switcher.
+- **Context and Reasons for Changes**: Generated the requested study tool output directly in the docs folder using the project’s Python code as evidence.

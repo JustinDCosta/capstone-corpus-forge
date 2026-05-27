@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Corpus Forge Architecture</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --panel-2: #1f2937;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --accent: #60a5fa;
+      --border: #334155;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(180deg, #0b1220 0%, #111827 100%);
+      color: var(--text);
+      line-height: 1.55;
+    }
+
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 32px 20px 64px;
+    }
+
+    header {
+      margin-bottom: 28px;
+      padding: 24px;
+      background: rgba(17, 24, 39, 0.9);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+    }
+
+    h1, h2, h3 {
+      line-height: 1.2;
+      margin-top: 0;
+    }
+
+    h1 { margin-bottom: 8px; }
+
+    section {
+      margin-top: 24px;
+      padding: 24px;
+      background: rgba(17, 24, 39, 0.82);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+    }
+
+    p { color: var(--text); }
+
+    .muted { color: var(--muted); }
+
+    .mermaid {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 16px;
+      overflow-x: auto;
+    }
+
+    ul {
+      padding-left: 20px;
+    }
+
+    li { margin-bottom: 6px; }
+
+    .tag {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(96, 165, 250, 0.15);
+      color: var(--accent);
+      font-size: 0.85rem;
+      border: 1px solid rgba(96, 165, 250, 0.35);
+    }
+  </style>
+  <script type="module">
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
+    mermaid.initialize({ startOnLoad: true, securityLevel: "strict", theme: "default" });
+  </script>
+</head>
+<body>
+  <main>
+    <header>
+      <span class="tag">Architecture</span>
+      <h1>Corpus Forge Architecture</h1>
+      <p class="muted">A local RAG application built from a launcher, a FastAPI backend, a Streamlit frontend, and local persistence for vectors and artifacts.</p>
+    </header>
+
+    <section>
+      <h2>Module Dependency Graph</h2>
+      <p>This view shows the main Python modules and the local/external systems they depend on.</p>
+      <div class="mermaid">
+flowchart TD
+    main_py["main.py"] --> app_init["app/__init__.py"]
+    start_py["start.py"] --> main_py
+    start_py --> frontend_py["frontend.py"]
+
+    app_init --> app_config["app/config.py"]
+    app_init --> app_routes["app/routes.py"]
+    app_routes --> app_config
+    app_routes --> app_db["app/db.py"]
+    app_routes --> app_utils["app/utils.py"]
+    app_utils --> app_db
+
+    app_db --> chroma["ChromaDB persistent store"]
+    app_config --> groq["Groq API"]
+    frontend_py --> backend_api["FastAPI backend over HTTP"]
+      </div>
+    </section>
+
+    <section>
+      <h2>Runtime Flow</h2>
+      <p>The app can be launched with <strong>start.py</strong>, or the backend and frontend can be run separately. Once the UI is up, the sidebar drives document management while the tabs handle retrieval and generation.</p>
+      <div class="mermaid">
+flowchart TD
+    user["User or developer"] --> launcher["start.py"]
+    launcher --> backend_boot["main.py starts Uvicorn"]
+    launcher --> frontend_boot["frontend.py starts Streamlit"]
+    backend_boot --> fastapi_app["FastAPI app in app/__init__.py"]
+    fastapi_app --> routes["APIRouter in app/routes.py"]
+
+    frontend_boot --> sidebar["Streamlit sidebar and tabs"]
+
+    sidebar -->|"Upload document"| upload_route["POST /upload/"]
+    sidebar -->|"List or delete documents"| document_routes["GET /documents/ and DELETE /documents/{filename}"]
+    sidebar -->|"Read metrics"| metrics_route["GET /metrics/"]
+    sidebar -->|"Ask a question"| chat_route["POST /chat/"]
+    sidebar -->|"Generate study material"| generate_routes["POST /generate/quiz/, /generate/flashcards/, /generate/code-review/"]
+
+    upload_route --> utils["app/utils.py"]
+    upload_route --> chroma["ChromaDB collection in chroma_db/"]
+
+    chat_route --> chroma
+    chat_route --> groq["Groq Llama 3.1 8B"]
+
+    generate_routes --> utils
+    generate_routes --> groq
+    generate_routes --> artifacts["data/artifacts/"]
+      </div>
+    </section>
+
+    <section>
+      <h2>Function Call Graph</h2>
+      <p>This graph focuses on the key functions that control startup, the frontend workflow, and the backend request handlers.</p>
+      <div class="mermaid">
+flowchart TD
+    start_main["start.main()"] --> wait_backend["start.wait_for_backend()"]
+    wait_backend --> ping_check["start.is_backend_ready()"]
+    start_main --> spawn_proc["start.start_process()"]
+    start_main --> stop_proc["start.terminate_process()"]
+
+    frontend_main["frontend.main()"] --> render_sidebar["frontend.render_sidebar()"]
+    frontend_main --> render_upload["frontend.render_upload_tab()"]
+    frontend_main --> render_chat["frontend.render_chat_tab()"]
+    frontend_main --> render_quiz["frontend.render_quiz_tab()"]
+    frontend_main --> render_flash["frontend.render_flashcards_tab()"]
+    frontend_main --> render_review["frontend.render_code_review_tab()"]
+    frontend_main --> render_artifacts["frontend.render_artifacts_tab()"]
+
+    render_sidebar --> fetch_docs["frontend.fetch_documents()"]
+    render_sidebar --> upload_doc["frontend.upload_document()"]
+    render_sidebar --> fetch_metrics["frontend.fetch_metrics()"]
+    render_artifacts --> fetch_artifacts["frontend.fetch_artifacts_list()"]
+    render_artifacts --> fetch_artifact_content["frontend.fetch_artifact_content()"]
+
+    upload_doc --> upload_route["app.routes.upload_document()"]
+    render_chat --> chat_route["app.routes.chat_with_corpus()"]
+    render_quiz --> quiz_route["app.routes.generate_quiz()"]
+    render_flash --> flash_route["app.routes.generate_flashcards()"]
+    render_review --> review_route["app.routes.generate_code_review()"]
+
+    upload_route --> extract_text["app.utils.extract_text_from_file()"]
+    upload_route --> chunk_text["app.utils.chunk_text()"]
+    upload_route --> collection_ops["ChromaDB collection.get / delete / add"]
+
+    chat_route --> collection_query["ChromaDB collection.query()"]
+    chat_route --> groq_chat["Groq chat completions"]
+
+    quiz_route --> get_context["app.utils.get_document_context()"]
+    flash_route --> get_context
+    review_route --> get_context
+    quiz_route --> save_artifact["app.routes.save_artifact()"]
+    flash_route --> save_artifact
+
+    get_context --> collection_get["ChromaDB collection.get()"]
+    save_artifact --> artifact_dir["data/artifacts/"]
+      </div>
+    </section>
+
+    <section>
+      <h2>Primary Sequence</h2>
+      <p>This sequence covers the main launch path and the two most important user actions: uploading a document and asking a question.</p>
+      <div class="mermaid">
+sequenceDiagram
+    participant U as "User"
+    participant L as "start.py"
+    participant B as "main.py / Uvicorn"
+    participant F as "frontend.py / Streamlit"
+    participant R as "app.routes"
+    participant X as "app.utils"
+    participant D as "ChromaDB"
+    participant G as "Groq API"
+
+    U->>L: "Run python start.py"
+    L->>B: "Start backend process"
+    loop "Poll /ping until ready"
+        L->>B: "GET /ping"
+        alt "Backend is not ready yet"
+            B-->>L: "No response or non-200 status"
+        else "Backend is ready"
+            B-->>L: "200 OK"
+        end
+    end
+    L->>F: "Start Streamlit frontend"
+
+    U->>F: "Upload a file from the sidebar"
+    F->>R: "POST /upload/"
+    R->>R: "Validate filename, type, and size"
+    alt "Upload accepted"
+        R->>X: "extract_text_from_file()"
+        X-->>R: "Raw text"
+        R->>X: "chunk_text()"
+        X-->>R: "Overlapping chunks"
+        R->>D: "Replace any existing chunks for the same filename"
+        D-->>R: "Chunks stored"
+        R-->>F: "Upload success"
+        F->>R: "GET /documents/"
+        R-->>F: "Updated document list"
+    else "Upload rejected"
+        R-->>F: "HTTP error"
+    end
+
+    U->>F: "Submit a chat request"
+    F->>R: "POST /chat/ with query and optional filename"
+    R->>D: "collection.query()"
+    D-->>R: "Top matching chunks"
+    R->>G: "Generate answer from context"
+    G-->>R: "Response and token usage"
+    R-->>F: "Answer and metrics"
+    F->>R: "GET /metrics/"
+    R-->>F: "Latest counters"
+      </div>
+    </section>
+
+    <section>
+      <h2>Notes</h2>
+      <ul>
+        <li><code>main.py</code> is only a thin Uvicorn entry point.</li>
+        <li><code>start.py</code> is the convenience launcher that waits for <code>/ping</code> before opening the UI.</li>
+        <li><code>frontend.py</code> uses HTTP requests only; it does not talk to ChromaDB or Groq directly.</li>
+        <li><code>app/routes.py</code> owns request handling, while <code>app/utils.py</code> handles extraction and chunking.</li>
+        <li><code>data/artifacts/</code> stores generated quizzes and flashcards as JSON files.</li>
+        <li><code>chroma_db/</code> is the local persistent vector store used by the backend.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Assumptions</h2>
+      <ul>
+        <li>The project is run locally, matching the code’s localhost defaults.</li>
+        <li>Streamlit is the only frontend in the current workspace.</li>
+        <li>The backend may be launched either by <code>start.py</code> or directly with <code>python main.py</code>.</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>

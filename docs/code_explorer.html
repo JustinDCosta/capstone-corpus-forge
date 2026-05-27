@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Code Explorer — Corpus Forge</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+:root {
+  --bg: #1e1e2e;
+  --surface: #2a2a3e;
+  --surface2: #313148;
+  --text: #cdd6f4;
+  --muted: #a6adc8;
+  --accent: #89b4fa;
+  --green: #a6e3a1;
+  --yellow: #f9e2af;
+  --red: #f38ba8;
+  --mono: 'Courier New', Courier, monospace;
+  --radius: 8px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, sans-serif; line-height: 1.6; }
+a { color: var(--accent); }
+a:hover { text-decoration: underline; }
+
+header { padding: 1.5rem 2rem; border-bottom: 1px solid #3a3a55; background: var(--surface); }
+header h1 { font-size: 1.4rem; color: var(--accent); letter-spacing: -0.3px; }
+header p { color: var(--muted); font-size: 0.88rem; margin-top: 0.2rem; }
+header .file-badge { display: inline-block; background: var(--surface2); border-radius: 4px; padding: 0.1rem 0.5rem; font-family: var(--mono); font-size: 0.8rem; color: var(--yellow); margin-top: 0.3rem; }
+
+/* Tab navigation */
+.tab-nav { display: flex; padding: 0 2rem; background: var(--surface); border-bottom: 1px solid #3a3a55; flex-wrap: wrap; gap: 0; }
+.tab-btn { padding: 0.75rem 1.2rem; cursor: pointer; border: none; background: none; color: var(--muted); font-size: 0.88rem; border-bottom: 2px solid transparent; transition: all 0.18s; white-space: nowrap; }
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+
+/* Tab panels */
+.tab-panel { display: none; padding: 2rem; max-width: 1280px; margin: 0 auto; }
+.tab-panel.active { display: block; }
+
+/* Cards */
+.card { background: var(--surface); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid #3a3a55; }
+.card h3 { color: var(--accent); margin-bottom: 0.6rem; font-size: 1rem; }
+
+/* Two-column */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+@media (max-width: 800px) { .two-col { grid-template-columns: 1fr; } }
+
+/* Architecture sub-tabs */
+.arch-subnav { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+.arch-btn { padding: 0.35rem 0.85rem; border-radius: 20px; border: 1px solid #444; background: none; color: var(--muted); cursor: pointer; font-size: 0.82rem; transition: all 0.18s; }
+.arch-btn:hover { border-color: var(--accent); color: var(--text); }
+.arch-btn.active { background: var(--accent); color: #1e1e2e; border-color: var(--accent); font-weight: 600; }
+.arch-panel { display: none; }
+.arch-panel.active { display: block; }
+
+.diag-container { background: var(--surface2); border-radius: var(--radius); padding: 1.5rem; min-height: 280px; overflow-x: auto; display: flex; justify-content: center; align-items: flex-start; }
+.diag-container svg { max-width: 100%; height: auto; }
+.diag-title { color: var(--accent); font-size: 1.05rem; font-weight: 600; margin-bottom: 0.75rem; }
+.diag-caption { color: var(--muted); font-size: 0.82rem; margin-top: 0.75rem; font-style: italic; border-left: 2px solid #444; padding-left: 0.6rem; }
+
+/* Patterns */
+.pattern-card { background: var(--surface2); border-radius: var(--radius); padding: 1.2rem; margin-bottom: 1rem; border: 1px solid #3a3a55; }
+.pattern-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; }
+.pattern-icon { font-size: 1.1rem; }
+.pattern-title { font-weight: 600; color: var(--text); font-size: 0.95rem; }
+.pattern-desc { color: var(--muted); font-size: 0.85rem; margin-bottom: 0.75rem; }
+.pattern-layers { display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 0.6rem; }
+.layer { font-size: 0.8rem; padding: 0.28rem 0.6rem; border-radius: 4px; line-height: 1.4; }
+.layer-basics   { background: #1e3a2a; color: #a6e3a1; }
+.layer-eng      { background: #3a2e1a; color: #f9e2af; }
+.layer-arch     { background: #1a2a3e; color: #89b4fa; }
+.layer-label    { font-weight: 700; margin-right: 0.35rem; }
+.ext-link       { display: inline-block; font-size: 0.8rem; color: var(--accent); text-decoration: none; margin-top: 0.2rem; }
+.ext-link:hover { text-decoration: underline; }
+.fix-hint       { background: #1e1e2e; border-left: 3px solid var(--yellow); padding: 0.4rem 0.7rem; border-radius: 0 4px 4px 0; font-size: 0.8rem; color: var(--text); margin-top: 0.5rem; }
+code { font-family: var(--mono); font-size: 0.85em; background: #12121e; padding: 0.05em 0.3em; border-radius: 3px; color: var(--yellow); }
+
+/* Badges */
+.badge { display: inline-block; padding: 0.18rem 0.55rem; border-radius: 12px; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.3px; }
+.badge-high   { background: #4a1a2a; color: var(--red); }
+.badge-medium { background: #3e2e10; color: var(--yellow); }
+.badge-low    { background: #1a3220; color: var(--green); }
+.badge-score  { background: var(--surface2); color: var(--accent); font-size: 1rem; font-weight: 700; padding: 0.3rem 0.8rem; border: 1px solid var(--accent); border-radius: var(--radius); }
+
+/* Type Hints */
+.type-banner { display: flex; align-items: center; gap: 1.2rem; padding: 1.1rem 1.5rem; background: var(--surface2); border-radius: var(--radius); margin-bottom: 1.5rem; border: 1px solid #3a3a55; }
+.score-big { font-size: 2.2rem; font-weight: 800; color: var(--accent); line-height: 1; }
+.score-verdict { color: var(--muted); font-size: 0.88rem; }
+
+/* Code Review */
+.review-layout { display: grid; grid-template-columns: 1fr 1.5fr; gap: 1.5rem; }
+@media (max-width: 800px) { .review-layout { grid-template-columns: 1fr; } }
+.review-left { background: var(--surface); border-radius: var(--radius); padding: 1.1rem; border: 1px solid #3a3a55; }
+.review-right { background: var(--surface); border-radius: var(--radius); padding: 1.5rem; border: 1px solid #3a3a55; min-height: 320px; }
+.review-item { padding: 0.7rem 0.8rem; border-radius: 6px; cursor: pointer; margin-bottom: 0.5rem; border: 1px solid transparent; transition: all 0.15s; }
+.review-item:hover { border-color: #444; background: var(--surface2); }
+.review-item.selected { border-color: var(--accent); background: var(--surface2); }
+.ri-titlerow { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; }
+.ri-title { font-size: 0.88rem; font-weight: 600; color: var(--text); }
+.ri-note { font-size: 0.78rem; color: var(--muted); margin-top: 0.2rem; }
+pre.snippet { background: #12121e; border-radius: 5px; padding: 0.7rem; font-size: 0.76rem; overflow-x: auto; color: #cdd6f4; font-family: var(--mono); margin: 0.6rem 0; line-height: 1.5; border: 1px solid #2a2a3e; }
+.detail-head { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.9rem; }
+.detail-title { color: var(--accent); font-size: 1rem; font-weight: 700; }
+.detail-body { color: var(--muted); font-size: 0.86rem; line-height: 1.65; margin-bottom: 0.9rem; }
+.hint-box { background: var(--surface2); border-left: 3px solid var(--accent); padding: 0.6rem 0.8rem; border-radius: 0 4px 4px 0; font-size: 0.84rem; color: var(--text); }
+
+/* Performance */
+.perf-card { background: var(--surface2); border-radius: var(--radius); padding: 1.2rem; margin-bottom: 1rem; border: 1px solid #3a3a55; }
+.perf-title { font-weight: 600; color: var(--text); margin-bottom: 0.4rem; }
+.perf-desc { color: var(--muted); font-size: 0.85rem; margin-bottom: 0.5rem; }
+
+/* Next Steps */
+.ns-item { display: flex; align-items: flex-start; gap: 1rem; padding: 1rem 1.2rem; background: var(--surface2); border-radius: var(--radius); margin-bottom: 0.8rem; border: 1px solid #3a3a55; }
+.ns-num { font-size: 1.4rem; font-weight: 800; color: var(--accent); min-width: 2rem; line-height: 1.2; }
+.ns-text a { color: var(--accent); text-decoration: none; font-weight: 600; font-size: 0.95rem; }
+.ns-text a:hover { text-decoration: underline; }
+.ns-desc { color: var(--muted); font-size: 0.83rem; margin-top: 0.2rem; }
+
+/* Fallback */
+.fallback { background: #2a1215; color: var(--red); padding: 1rem; border-radius: 6px; font-size: 0.72rem; font-family: var(--mono); overflow-x: auto; white-space: pre-wrap; }
+
+/* Section headings */
+.section-head { font-size: 1.05rem; font-weight: 700; margin-bottom: 1rem; }
+.section-head.green { color: var(--green); }
+.section-head.yellow { color: var(--yellow); }
+.section-head.red { color: var(--red); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Code Explorer</h1>
+  <span class="file-badge">docs/code_explorer.html</span>
+  <p style="margin-top:0.4rem;">Corpus Forge project overview for the refactored FastAPI backend, Streamlit frontend, and local persistence layers.</p>
+</header>
+
+<nav class="tab-nav">
+<button class="tab-btn active" onclick="switchTab('architecture', this)">Architecture</button>
+<button class="tab-btn" onclick="switchTab('patterns', this)">Patterns</button>
+<button class="tab-btn" onclick="switchTab('typehints', this)">Type Hints</button>
+<button class="tab-btn" onclick="switchTab('codereview', this)">Code Review</button>
+<button class="tab-btn" onclick="switchTab('performance', this)">Performance</button>
+<button class="tab-btn" onclick="switchTab('nextsteps', this)">Next Steps</button>
+</nav>
+
+<div class="tab-panel active" id="tab-architecture">
+  <div class="arch-subnav">
+    <button class="arch-btn active" onclick="switchArch('call-graph', this)">Call Graph</button>
+    <button class="arch-btn" onclick="switchArch('dependency-graph', this)">Dependencies</button>
+    <button class="arch-btn" onclick="switchArch('full-sequence', this)">Launch Flow</button>
+    <button class="arch-btn" onclick="switchArch('upload-sequence', this)">Upload Flow</button>
+    <button class="arch-btn" onclick="switchArch('generation-sequence', this)">Generate Flow</button>
+    <button class="arch-btn" onclick="switchArch('filename-flow', this)">Filename Flow</button>
+    <button class="arch-btn" onclick="switchArch('context-flow', this)">Context Flow</button>
+    <button class="arch-btn" onclick="switchArch('metrics-flow', this)">Metrics Flow</button>
+    <button class="arch-btn" onclick="switchArch('lifecycle-flow', this)">Lifecycle Flow</button>
+  </div>
+
+  <div class="arch-panel active" id="arch-call-graph">
+    <div class="diag-title">Function Call Graph</div>
+    <div class="diag-container" id="diag-call-graph"></div>
+    <div class="diag-caption">This shows how the launcher, frontend helpers, and backend handlers call into each other during the main workflows.</div>
+  </div>
+
+  <div class="arch-panel" id="arch-dependency-graph">
+    <div class="diag-title">Dependency Graph</div>
+    <div class="diag-container" id="diag-dependency-graph"></div>
+    <div class="diag-caption">This maps the local Python files to the external libraries and services they depend on.</div>
+  </div>
+
+  <div class="arch-panel" id="arch-full-sequence">
+    <div class="diag-title">Launch Sequence</div>
+    <div class="diag-container" id="diag-full-sequence"></div>
+    <div class="diag-caption">This sequence walks through startup, readiness polling, and the first upload and chat interactions.</div>
+  </div>
+
+  <div class="arch-panel" id="arch-upload-sequence">
+    <div class="diag-title">Upload Sequence</div>
+    <div class="diag-container" id="diag-upload-sequence"></div>
+    <div class="diag-caption">This zooms into the upload path from browser file selection to local storage and vector indexing.</div>
+  </div>
+
+  <div class="arch-panel" id="arch-generation-sequence">
+    <div class="diag-title">Generation Sequence</div>
+    <div class="diag-container" id="diag-generation-sequence"></div>
+    <div class="diag-caption">This focuses on quiz and flashcard generation, including the artifact save step after the LLM responds.</div>
+  </div>
+
+  <div class="arch-panel" id="arch-filename-flow">
+    <div class="diag-title">Filename Flow</div>
+    <div class="diag-container" id="diag-filename-flow"></div>
+    <div class="diag-caption">This tracks how one filename moves through upload metadata, filtering, deletion, and artifact naming.</div>
+  </div>
+
+  <div class="arch-panel" id="arch-context-flow">
+    <div class="diag-title">Context Flow</div>
+    <div class="diag-container" id="diag-context-flow"></div>
+    <div class="diag-caption">This shows how extracted text becomes chunks, context, and finally the prompt sent to Groq.</div>
+  </div>
+
+  <div class="arch-panel" id="arch-metrics-flow">
+    <div class="diag-title">Metrics Flow</div>
+    <div class="diag-container" id="diag-metrics-flow"></div>
+    <div class="diag-caption">This explains the in-memory counters and how the Streamlit sidebar reads them back from the API.</div>
+  </div>
+
+  <div class="arch-panel" id="arch-lifecycle-flow">
+    <div class="diag-title">Document Lifecycle</div>
+    <div class="diag-container" id="diag-lifecycle-flow"></div>
+    <div class="diag-caption">This optional view shows the lifecycle of a corpus document from upload through indexing, use, and deletion.</div>
+  </div>
+</div>
+
+<div class="tab-panel" id="tab-patterns">
+  <div class="two-col">
+    <div>
+      <div class="section-head green">Good Patterns</div>
+      <div class="pattern-card">
+        <div class="pattern-header"><span class="pattern-icon">✅</span><span class="pattern-title">Separated backend modules</span></div>
+        <div class="pattern-desc">The project moved from one large file into <code>app/config.py</code>, <code>app/db.py</code>, <code>app/utils.py</code>, and <code>app/routes.py</code>. That makes the code much easier to scan and reason about.</div>
+        <div class="pattern-layers">
+          <div class="layer layer-basics"><span class="layer-label">Basics:</span> Each file now has one main job, so a beginner can open the right place without hunting through unrelated code.</div>
+          <div class="layer layer-eng"><span class="layer-label">Engineering:</span> The route handlers stay focused on HTTP behavior while extraction and chunking logic live in utilities.</div>
+          <div class="layer layer-arch"><span class="layer-label">Architecture:</span> This is a clean separation of concerns pattern that lowers coupling and makes future testing easier.</div>
+        </div>
+        <a class="ext-link" href="https://docs.python.org/3/library/pathlib.html" target="_blank" rel="noreferrer">Python pathlib docs</a>
+      </div>
+
+      <div class="pattern-card">
+        <div class="pattern-header"><span class="pattern-icon">✅</span><span class="pattern-title">Defensive upload handling</span></div>
+        <div class="pattern-desc">The upload path enforces a 10 MB limit, checks file extensions, writes to a temp file, and deletes that file in a <code>finally</code> block. That prevents common resource leaks and keeps the server from accepting unsafe inputs blindly.</div>
+        <div class="pattern-layers">
+          <div class="layer layer-basics"><span class="layer-label">Basics:</span> The code refuses unsupported files and stops oversized uploads before they use too much disk or memory.</div>
+          <div class="layer layer-eng"><span class="layer-label">Engineering:</span> Streaming the file in chunks avoids reading the entire upload into RAM at once.</div>
+          <div class="layer layer-arch"><span class="layer-label">Architecture:</span> This is a classic defense-in-depth flow because validation, temporary storage, and cleanup all happen in separate steps.</div>
+        </div>
+        <a class="ext-link" href="https://docs.python.org/3/library/tempfile.html" target="_blank" rel="noreferrer">Python tempfile docs</a>
+      </div>
+
+      <div class="pattern-card">
+        <div class="pattern-header"><span class="pattern-icon">✅</span><span class="pattern-title">Small typed helpers</span></div>
+        <div class="pattern-desc">Utility functions such as <code>chunk_text</code> and <code>get_document_context</code> are short, direct, and annotated. That makes their behavior easier to test and easier for the type checker to follow.</div>
+        <div class="pattern-layers">
+          <div class="layer layer-basics"><span class="layer-label">Basics:</span> Short functions are easier to understand than one long block of mixed logic.</div>
+          <div class="layer layer-eng"><span class="layer-label">Engineering:</span> Type hints and clear names give future readers a fast mental model of each helper.</div>
+          <div class="layer layer-arch"><span class="layer-label">Architecture:</span> Reusable helpers reduce repetition across upload, chat, quiz, flashcards, and code review flows.</div>
+        </div>
+        <a class="ext-link" href="https://docs.python.org/3/library/typing.html" target="_blank" rel="noreferrer">Python typing docs</a>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-head yellow">Potential Issues</div>
+      <div class="pattern-card">
+        <div class="pattern-header"><span class="pattern-icon">⚠️</span><span class="pattern-title">In-memory metrics only</span></div>
+        <div class="pattern-desc">The request and token counters live in a plain dictionary inside <code>app/routes.py</code>. That is fine for a demo, but it resets on restart and can drift under concurrent access.</div>
+        <div class="pattern-layers">
+          <div class="layer layer-basics"><span class="layer-label">Basics:</span> Refreshing the server resets the numbers, so the UI does not show a durable history.</div>
+          <div class="layer layer-eng"><span class="layer-label">Engineering:</span> Multiple requests can update the same dictionary at the same time, which makes exact counts unreliable.</div>
+          <div class="layer layer-arch"><span class="layer-label">Architecture:</span> Observability data usually belongs in a shared store or metrics system, not in process memory.</div>
+        </div>
+        <a class="ext-link" href="https://docs.python.org/3/library/threading.html" target="_blank" rel="noreferrer">Python threading docs</a>
+      </div>
+
+      <div class="pattern-card">
+        <div class="pattern-header"><span class="pattern-icon">⚠️</span><span class="pattern-title">Character based context cap</span></div>
+        <div class="pattern-desc">The generation helpers concatenate all chunks for a file and then slice the text at 24,000 characters. That is easy to follow, but it is only a rough stand-in for real token counting.</div>
+        <div class="pattern-layers">
+          <div class="layer layer-basics"><span class="layer-label">Basics:</span> Long documents can still behave unpredictably because characters and tokens are not the same thing.</div>
+          <div class="layer layer-eng"><span class="layer-label">Engineering:</span> The code may waste work by joining more text than the model can actually use.</div>
+          <div class="layer layer-arch"><span class="layer-label">Architecture:</span> A tokenizer-aware budget would fit the prompt strategy more cleanly than a fixed character slice.</div>
+        </div>
+        <a class="ext-link" href="https://www.wikipedia.org/wiki/Byte_pair_encoding" target="_blank" rel="noreferrer">Wikipedia token overview</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tab-panel" id="tab-typehints">
+  <div class="type-banner">
+    <div class="score-big">4 / 5</div>
+    <div class="score-verdict">Most backend helpers are annotated well, but a few frontend helper signatures still leave room for tighter payload typing.</div>
+  </div>
+  <div class="two-col">
+    <div>
+      <div class="section-head green">Strengths</div>
+      <div class="perf-card">
+        <div class="perf-title">Annotated return values</div>
+        <div class="perf-desc">Many functions in the backend and launcher explicitly return <code>None</code>, <code>bool</code>, <code>dict</code>, or <code>str</code>. That helps the reader understand what each helper promises to give back.</div>
+      </div>
+      <div class="perf-card">
+        <div class="perf-title">Concrete containers</div>
+        <div class="perf-desc">The code uses annotations like <code>list[str]</code> and <code>dict</code> where collection shape matters. That is especially helpful for document lists and metrics payloads.</div>
+      </div>
+    </div>
+    <div>
+      <div class="section-head yellow">Gaps</div>
+      <div class="perf-card">
+        <div class="perf-title">Untyped frontend payloads</div>
+        <div class="perf-desc">Helpers such as <code>fetch_artifact_content</code> and <code>upload_document</code> still accept broad values without a more precise payload model. That makes the Streamlit side harder to validate statically.</div>
+      </div>
+      <div class="perf-card">
+        <div class="perf-title">Loose dictionary returns</div>
+        <div class="perf-desc">Several API helpers return generic dictionaries instead of named data classes or typed dictionaries. It works, but the intent of the payload shape is easy to lose as the project grows.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tab-panel" id="tab-codereview">
+  <div class="review-layout">
+    <div class="review-left">
+      <div class="section-head red">Review Items</div>
+
+      <div class="review-item selected" id="ri-0" onclick="selectReview(0)">
+        <div class="ri-titlerow"><div class="ri-title">Raw filename path</div><span class="badge badge-high">high</span></div>
+        <div class="ri-note">Using the raw filename in a path parameter is fragile for special characters and weakens route stability.</div>
+        <pre class="snippet">@router.delete("/documents/{filename}")
+async def delete_document(filename: str):
+    existing = collection.get(where={"filename": filename})
+    collection.delete(where={"filename": filename})</pre>
+      </div>
+
+      <div class="review-item" id="ri-1" onclick="selectReview(1)">
+        <div class="ri-titlerow"><div class="ri-title">Shared metrics dict</div><span class="badge badge-medium">medium</span></div>
+        <div class="ri-note">The counters are process local, so they reset on restart and can drift when requests overlap.</div>
+        <pre class="snippet">metrics_counters = {
+    "total_requests": 0,
+    "total_tokens_used": 0,
+}</pre>
+      </div>
+
+      <div class="review-item" id="ri-2" onclick="selectReview(2)">
+        <div class="ri-titlerow"><div class="ri-title">Character cap heuristic</div><span class="badge badge-medium">medium</span></div>
+        <div class="ri-note">The code slices by characters, which is easy to read but not a reliable token budget.</div>
+        <pre class="snippet">full_text = "\n\n".join(doc_data["documents"])
+return full_text[:24000]</pre>
+      </div>
+
+      <div class="review-item" id="ri-3" onclick="selectReview(3)">
+        <div class="ri-titlerow"><div class="ri-title">Duplicate prompt flows</div><span class="badge badge-low">low</span></div>
+        <div class="ri-note">Quiz, flashcards, and code review repeat the same prompt-and-save pattern several times.</div>
+        <pre class="snippet">chat_completion = groq_client.chat.completions.create(
+    messages=[{"role": "system", "content": system_prompt}],
+    model="llama-3.1-8b-instant",
+    response_format={"type": "json_object"},
+)</pre>
+      </div>
+    </div>
+
+    <div class="review-right" id="review-detail-panel"></div>
+  </div>
+</div>
+
+<div class="tab-panel" id="tab-performance">
+  <div class="two-col">
+    <div>
+      <div class="section-head green">Wins</div>
+      <div class="perf-card">
+        <div class="perf-title">Linear chunking</div>
+        <div class="perf-desc"><code>chunk_text</code> walks the text once and keeps the logic simple. That is a good default for a local RAG pipeline because the cost stays predictable.</div>
+      </div>
+      <div class="perf-card">
+        <div class="perf-title">Sidebar caching</div>
+        <div class="perf-desc">The Streamlit sidebar stores documents, metrics, and artifacts in session state. That avoids re-fetching the same lists on every rerun.</div>
+      </div>
+    </div>
+    <div>
+      <div class="section-head yellow">Risks</div>
+      <div class="perf-card">
+        <div class="perf-title">Full document joins</div>
+        <div class="perf-desc"><code>get_document_context</code> joins every chunk into one large string for each generation request, so larger documents make every call heavier.</div>
+      </div>
+      <div class="perf-card">
+        <div class="perf-title">Repeated vector queries</div>
+        <div class="perf-desc">Chat, delete, list, and generation routes all hit the same local vector store. That is fine for demos, but the hot paths will feel slower as the corpus grows.</div>
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:1rem;">
+    <span class="badge-score">3 / 6</span>
+    <span style="color:var(--muted); margin-left:0.75rem;">Good enough for a local demo, but the document-wide join and repeated retrieval work are the first places to watch.</span>
+  </div>
+</div>
+
+<div class="tab-panel" id="tab-nextsteps">
+  <div class="ns-item">
+    <div class="ns-num">1</div>
+    <div class="ns-text">
+      <a href="https://docs.python.org/3/library/tempfile.html" target="_blank" rel="noreferrer">Python tempfile docs</a>
+      <div class="ns-desc">Useful for understanding why the upload route writes to a temp file and cleans it up in a <code>finally</code> block.</div>
+    </div>
+  </div>
+  <div class="ns-item">
+    <div class="ns-num">2</div>
+    <div class="ns-text">
+      <a href="https://docs.python.org/3/library/pathlib.html" target="_blank" rel="noreferrer">Python pathlib docs</a>
+      <div class="ns-desc">Helpful for filename handling, safe path manipulation, and avoiding accidental traversal bugs.</div>
+    </div>
+  </div>
+  <div class="ns-item">
+    <div class="ns-num">3</div>
+    <div class="ns-text">
+      <a href="https://fastapi.tiangolo.com/" target="_blank" rel="noreferrer">FastAPI docs</a>
+      <div class="ns-desc">A good follow-up if you want to understand why the backend routes use form fields, dependencies, and typed handlers the way they do.</div>
+    </div>
+  </div>
+  <div class="ns-item">
+    <div class="ns-num">4</div>
+    <div class="ns-text">
+      <a href="https://docs.streamlit.io/" target="_blank" rel="noreferrer">Streamlit docs</a>
+      <div class="ns-desc">Useful for learning how the sidebar, session state, and tab layout work in the frontend.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Tab switching ──
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ── Architecture sub-tabs ──
+function switchArch(name, btn) {
+  document.querySelectorAll('.arch-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.arch-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('arch-' + name).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ── Code Review ──
+const reviewItems = [
+  {
+    id: 0,
+    title: "Raw filename path",
+    severity: "high",
+    snippet: `@router.delete("/documents/{filename}")
+async def delete_document(filename: str):
+    existing = collection.get(where={"filename": filename})
+    collection.delete(where={"filename": filename})`,
+    shortNote: "Using the raw filename in a path parameter is fragile for special characters and weakens route stability.",
+    fullExplanation: "Path parameters are fine for simple identifiers, but raw filenames can contain spaces, encoded characters, or slashes that make the route hard to call correctly. The frontend and backend also depend on the exact same string, which increases the chance of mismatch.",
+    improvementHint: "Use a stable document id or URL-encode the path segment before deletion."
+  },
+  {
+    id: 1,
+    title: "Shared metrics dict",
+    severity: "medium",
+    snippet: `metrics_counters = {
+    "total_requests": 0,
+    "total_tokens_used": 0,
+}`,
+    shortNote: "The counters are process local, so they reset on restart and can drift when requests overlap.",
+    fullExplanation: "This is acceptable for a demo, but the counters are not durable and they are not protected against concurrent updates if the server ever handles more parallel work. That makes the numbers more illustrative than authoritative.",
+    improvementHint: "Move counters to a shared store or metrics backend if you need reliable totals."
+  },
+  {
+    id: 2,
+    title: "Character cap heuristic",
+    severity: "medium",
+    snippet: `full_text = "\n\n".join(doc_data["documents"])
+return full_text[:24000]`,
+    shortNote: "The code slices by characters, which is easy to read but not a reliable token budget.",
+    fullExplanation: "Character caps are a simple safety net, but they do not map cleanly to model tokens. Large or dense documents can still waste prompt space, and joining every chunk means the generation endpoints do more work than they need to do.",
+    improvementHint: "Use a tokenizer-aware budget or retrieve a smaller chunk set before building the prompt."
+  },
+  {
+    id: 3,
+    title: "Duplicate prompt flows",
+    severity: "low",
+    snippet: `chat_completion = groq_client.chat.completions.create(
+    messages=[{"role": "system", "content": system_prompt}],
+    model="llama-3.1-8b-instant",
+    response_format={"type": "json_object"},
+)`,
+    shortNote: "Quiz, flashcards, and code review repeat the same prompt-and-save pattern several times.",
+    fullExplanation: "The endpoints are readable because each one is self-contained, but the repeated structure makes future changes more expensive. If the prompt shape, metrics logic, or artifact save behavior changes, the same update has to be repeated in several places.",
+    improvementHint: "Extract a shared generation helper and keep only the schema-specific prompt text separate."
+  }
+];
+
+function escH(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function selectReview(id) {
+  document.querySelectorAll('.review-item').forEach(el => el.classList.remove('selected'));
+  document.getElementById('ri-' + id).classList.add('selected');
+  const item = reviewItems[id];
+  const sevClass = 'badge-' + item.severity;
+  const body = item.fullExplanation.replace(/\n/g, '<br>');
+  document.getElementById('review-detail-panel').innerHTML = `
+    <div>
+      <div class="detail-head">
+        <span class="detail-title">${escH(item.title)}</span>
+        <span class="badge ${escH(sevClass)}">${escH(item.severity)}</span>
+      </div>
+      <div class="detail-body">${body}</div>
+      <pre class="snippet">${escH(item.snippet)}</pre>
+      <div class="hint-box">&#128161; <strong>Improvement:</strong> ${escH(item.improvementHint)}</div>
+    </div>`;
+}
+
+// ── Mermaid ──
+mermaid.initialize({ startOnLoad: false, theme: 'dark', securityLevel: 'loose' });
+
+const diagrams = {
+  'call-graph': String.raw`flowchart TD
+    n1["launcher flow"] --> n2["backend check"]
+    n1 --> n3["frontend launch"]
+    n3 --> n4["sidebar render"]
+    n3 --> n5["tab render"]
+    n4 --> n6["document fetch"]
+    n4 --> n7["metrics fetch"]
+    n4 --> n8["upload submit"]
+    n4 --> n9["artifact fetch"]
+    n5 --> n10["chat submit"]
+    n5 --> n11["quiz submit"]
+    n5 --> n12["flashcard submit"]
+    n5 --> n13["review submit"]
+    n8 --> n14["text extract"]
+    n8 --> n15["chunk split"]
+    n10 --> n16["vector query"]
+    n10 --> n17["llm answer"]
+    n11 --> n18["context load"]
+    n11 --> n19["artifact save"]
+    n12 --> n18
+    n12 --> n19
+    n13 --> n18
+    n13 --> n19`,
+  'dependency-graph': String.raw`flowchart LR
+    n1["start script"] --> n2["main entry"]
+    n1 --> n3["frontend app"]
+    n2 --> n4["app init"]
+    n4 --> n5["config module"]
+    n4 --> n6["route module"]
+    n4 --> n7["db module"]
+    n4 --> n8["utils module"]
+    n3 --> n9["http client"]
+    n6 --> n10["vector store"]
+    n6 --> n11["llm client"]
+    n6 --> n12["artifact store"]
+    n8 --> n13["pdf parser"]
+    n8 --> n14["temp file"]
+    n3 --> n15["streamlit ui"]
+    n15 --> n9
+    n4 --> n16["fastapi app"]
+    click n9 href "https://pypi.org/search/?q=httpx" "Open docs"
+    click n10 href "https://pypi.org/search/?q=chromadb" "Open docs"
+    click n11 href "https://pypi.org/search/?q=groq" "Open docs"
+    click n12 href "https://docs.python.org/3/library/pathlib.html" "Open docs"
+    click n13 href "https://pypi.org/search/?q=pymupdf" "Open docs"
+    click n14 href "https://docs.python.org/3/library/tempfile.html" "Open docs"
+    click n15 href "https://pypi.org/search/?q=streamlit" "Open docs"
+    click n16 href "https://pypi.org/search/?q=fastapi" "Open docs"`,
+  'full-sequence': String.raw`sequenceDiagram
+    participant p1 as "user"
+    participant p2 as "launcher"
+    participant p3 as "backend"
+    participant p4 as "frontend"
+    participant p5 as "routes"
+    participant p6 as "utils"
+    participant p7 as "store"
+    participant p8 as "llm"
+
+    p1->>p2: "start app"
+    p2->>p3: "start backend"
+    loop "poll ready"
+        p2->>p3: "ping request"
+        alt "backend cold"
+            p3-->>p2: "wait again"
+        else "backend ready"
+            p3-->>p2: "ready now"
+        end
+    end
+    p2->>p4: "launch ui"
+
+    p1->>p4: "upload document"
+    p4->>p5: "upload request"
+    p5->>p6: "extract text"
+    p6-->>p5: "raw text"
+    p5->>p6: "split chunks"
+    p6-->>p5: "chunk list"
+    p5->>p7: "store chunks"
+    p7-->>p5: "stored chunks"
+    p5-->>p4: "upload result"
+
+    p1->>p4: "ask question"
+    p4->>p5: "chat request"
+    p5->>p7: "vector query"
+    p7-->>p5: "matching chunks"
+    p5->>p8: "generate answer"
+    p8-->>p5: "llm response"
+    p5-->>p4: "answer payload"`,
+  'upload-sequence': String.raw`sequenceDiagram
+    participant p1 as "user"
+    participant p2 as "frontend"
+    participant p3 as "routes"
+    participant p4 as "utils"
+    participant p5 as "store"
+
+    p1->>p2: "choose file"
+    p2->>p3: "upload request"
+    p3->>p3: "validate input"
+    alt "file too large"
+        p3-->>p2: "reject upload"
+    else "file allowed"
+        p3->>p3: "write temp file"
+        p3->>p4: "extract text"
+        p4-->>p3: "plain text"
+        p3->>p4: "split text"
+        p4-->>p3: "chunk list"
+        p3->>p5: "replace chunks"
+        p5-->>p3: "store updated"
+        p3-->>p2: "upload success"
+    end`,
+  'generation-sequence': String.raw`sequenceDiagram
+    participant p1 as "user"
+    participant p2 as "frontend"
+    participant p3 as "routes"
+    participant p4 as "utils"
+    participant p5 as "llm"
+    participant p6 as "artifacts"
+
+    p1->>p2: "generate study set"
+    p2->>p3: "generation request"
+    p3->>p4: "load context"
+    p4-->>p3: "combined text"
+    p3->>p5: "create json"
+    p5-->>p3: "json content"
+    p3->>p6: "save artifact"
+    p6-->>p3: "saved file"
+    p3-->>p2: "json response"`,
+  'filename-flow': String.raw`flowchart TD
+    n1["upload name"] --> n2["metadata store"]
+    n2 --> n3["document list"]
+    n3 --> n4["sidebar select"]
+    n4 --> n5["chat filter"]
+    n4 --> n6["generate filter"]
+    n4 --> n7["delete route"]
+    n4 --> n8["artifact name"]
+    n8 --> n9["saved json"]`,
+  'context-flow': String.raw`flowchart TD
+    n1["raw upload"] --> n2["text extract"]
+    n2 --> n3["chunk split"]
+    n3 --> n4["vector store"]
+    n4 --> n5["chat query"]
+    n4 --> n6["context load"]
+    n6 --> n7["prompt build"]
+    n7 --> n8["llm call"]
+    n8 --> n9["model answer"]`,
+  'metrics-flow': String.raw`flowchart TD
+    n1["llm request"] --> n2["usage count"]
+    n2 --> n3["metrics counter"]
+    n3 --> n4["metrics api"]
+    n4 --> n5["sidebar panel"]
+    n5 --> n6["user view"]`,
+  'lifecycle-flow': String.raw`flowchart LR
+    n1["uploaded state"] --> n2["indexed state"]
+    n2 --> n3["selected state"]
+    n3 --> n4["generated state"]
+    n4 --> n5["saved state"]
+    n5 --> n6["deleted state"]`
+};
+
+let renderCounter = 0;
+
+async function renderDiagram(key, containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  const source = diagrams[key];
+  if (!source) { container.innerHTML = '<p style="color:var(--muted)">No diagram source found.</p>'; return; }
+  const uid = 'mmd-' + key + '-' + (++renderCounter);
+  try {
+    const { svg, bindFunctions } = await mermaid.render(uid, source);
+    container.innerHTML = svg;
+    if (typeof bindFunctions === 'function') bindFunctions(container);
+  } catch (err) {
+    container.innerHTML = '<pre class="fallback">Render failed: ' + err.message + '\n\nSource:\n' + source + '</pre>';
+  }
+}
+
+async function renderAll() {
+  for (const [key] of Object.entries(diagrams)) {
+    await renderDiagram(key, 'diag-' + key);
+  }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  selectReview(0);
+  renderAll();
+});
+</script>
+</body>
+</html>
