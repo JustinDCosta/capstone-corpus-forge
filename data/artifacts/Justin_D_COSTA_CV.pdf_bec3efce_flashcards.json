@@ -1,0 +1,24 @@
+{
+  "flashcards": [
+    {
+      "front": "Full-Stack Developer",
+      "back": "A full-stack developer is a programmer who specializes in both front-end (client-side) and back-end (server-side) development, handling all aspects of web application development."
+    },
+    {
+      "front": "Agile/Scrum Methodologies",
+      "back": "Agile and Scrum are iterative and incremental software development methodologies that emphasize flexibility, collaboration, and continuous improvement, focusing on delivering working software in short cycles."
+    },
+    {
+      "front": "Cloud Infrastructure Management",
+      "back": "Cloud infrastructure management involves designing, deploying, and managing cloud-based systems, including scaling, security, and optimization, to ensure efficient and reliable operation."
+    },
+    {
+      "front": "Artificial Intelligence (AI) and Machine Learning (ML)",
+      "back": "AI and ML involve the development of intelligent systems that can learn, reason, and interact with humans, using techniques such as deep learning, natural language processing, and computer vision."
+    },
+    {
+      "front": "Project Management",
+      "back": "Project management involves planning, organizing, and controlling resources to achieve specific goals and objectives, using techniques such as Agile, Scrum, and Waterfall methodologies."
+    }
+  ]
+}

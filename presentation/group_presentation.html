@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Corpus Forge — Capstone Presentation</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- =========================================================
+       SLIDE 1 — TITLE
+       ========================================================= -->
+  <section class="slide slide-title" data-speaker="Group">
+    <div class="bg-grid"></div>
+    <div class="title-wrap">
+      <div class="eyebrow">Generative AI for Software Engineering · EPITA 2026</div>
+      <h1 class="hero-title">Corpus <span class="accent">Forge</span></h1>
+      <p class="hero-sub">Turning a heterogeneous corpus into actionable knowledge</p>
+      <div class="title-divider"></div>
+      <div class="team-row">
+        <div class="member">
+          <div class="dot"></div>
+          <div>
+            <div class="m-name">Justin D'Costa</div>
+            <div class="m-role">Backend &amp; RAG Pipeline</div>
+          </div>
+        </div>
+        <div class="member">
+          <div class="dot"></div>
+          <div>
+            <div class="m-name">Krishna Bansal</div>
+            <div class="m-role">Frontend &amp; Integration</div>
+          </div>
+        </div>
+        <div class="member">
+          <div class="dot"></div>
+          <div>
+            <div class="m-name">Piotr Moczulski</div>
+            <div class="m-role">Document Processing &amp; Testing</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       SLIDE 2 — AGENDA
+       ========================================================= -->
+  <section class="slide" data-speaker="Piotr">
+    <div class="slide-inner">
+      <div class="slide-header">
+        <span class="kicker">Agenda</span>
+        <h2>What we're covering</h2>
+      </div>
+      <div class="agenda-grid">
+        <div class="agenda-item"><span class="num">01</span><div><strong>Mission &amp; Demo</strong><p>What we built and why it matters</p></div></div>
+        <div class="agenda-item"><span class="num">02</span><div><strong>Architecture</strong><p>The RAG pipeline end-to-end</p></div></div>
+        <div class="agenda-item"><span class="num">03</span><div><strong>Engineering Decisions</strong><p>Trade-offs we made</p></div></div>
+        <div class="agenda-item"><span class="num">04</span><div><strong>Engineering Challenges</strong><p>Prompt evolution + reliability</p></div></div>
+        <div class="agenda-item"><span class="num">05</span><div><strong>AI Collaboration</strong><p>How we used (and audited) AI</p></div></div>
+        <div class="agenda-item"><span class="num">06</span><div><strong>Failures &amp; Lessons</strong><p>What we'd do differently</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       SLIDE 3 — MISSION
+       ========================================================= -->
+  <section class="slide" data-speaker="Piotr">
+    <div class="slide-inner">
+      <div class="slide-header">
+        <span class="kicker">The Mission</span>
+        <h2>Transform documents into <span class="accent">actionable knowledge</span></h2>
+      </div>
+      <div class="two-col">
+        <div>
+          <p class="lead">
+            Users upload a heterogeneous corpus — PDFs, markdown, source code — and Corpus Forge
+            lets them <strong>chat with it, study it, and review it</strong>, with answers grounded
+            in their own files instead of hallucinated by the model.
+          </p>
+          <ul class="check-list">
+            <li>Chat with retrieval-grounded answers</li>
+            <li>Auto-generated quizzes and flashcards</li>
+            <li>Structured code review for source files</li>
+            <li>Persistent corpus and generated artifacts</li>
+            <li>Live token &amp; request observability</li>
+          </ul>
+        </div>
+        <div class="pull-quote">
+          <div class="quote-mark">&ldquo;</div>
+          <p>The goal is not simply to build an application — it's to demonstrate engineering
+          judgment, evidence-based decisions, and a smart partnership with AI.</p>
+          <div class="quote-source">— Capstone Brief</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       SLIDE 4 — DEMO PLACEHOLDER
+       ========================================================= -->
+  <section class="slide slide-demo" data-speaker="Group">
+    <div class="slide-inner center">
+      <div class="demo-badge">LIVE DEMO · 3 MIN</div>
+      <h2 class="demo-title">Let's see it in action</h2>
+      <div class="demo-flow">
+        <div class="demo-step"><span>1</span><p>Upload a PDF + a Python file</p></div>
+        <div class="demo-arrow">→</div>
+        <div class="demo-step"><span>2</span><p>Ask a grounded question in Chat</p></div>
+        <div class="demo-arrow">→</div>
+        <div class="demo-step"><span>3</span><p>Generate a quiz &amp; code review</p></div>
+        <div class="demo-arrow">→</div>
+        <div class="demo-step"><span>4</span><p>Show metrics + saved artifacts</p></div>
+      </div>
+      <p class="demo-cmd">Run with: <code>python start.py</code></p>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       SLIDE 5 — ARCHITECTURE OVERVIEW
+       ========================================================= -->
+  <section class="slide" data-speaker="Justin">
+    <div class="slide-inner">
+      <div class="slide-header">
+        <span class="kicker">System Architecture</span>
+        <h2>The RAG pipeline, end-to-end</h2>
+      </div>
+      <div class="arch-diagram">
+        <div class="arch-layer">
+          <div class="arch-box ui">
+            <div class="arch-title">Frontend</div>
+            <div class="arch-tag">Streamlit</div>
+            <div class="arch-desc">Upload · Chat · Quiz · Flashcards · Review · Artifacts</div>
+          </div>
+        </div>
+        <div class="arch-arrow-down">↓ HTTP + optional X-API-Key</div>
+        <div class="arch-layer">
+          <div class="arch-box api">
+            <div class="arch-title">Backend API</div>
+            <div class="arch-tag">FastAPI · Uvicorn</div>
+            <div class="arch-desc">Routes · Validation · Metrics · Auth</div>
+          </div>
+        </div>
+        <div class="arch-layer arch-split">
+          <div class="arch-box svc">
+            <div class="arch-title">Ingestion</div>
+            <div class="arch-tag">PyMuPDF · chunker</div>
+            <div class="arch-desc">Extract → 1000-char chunks (200 overlap)</div>
+          </div>
+          <div class="arch-box svc">
+            <div class="arch-title">Vector Store</div>
+            <div class="arch-tag">ChromaDB (local)</div>
+            <div class="arch-desc">all-MiniLM-L6-v2 embeddings · persisted</div>
+          </div>
+          <div class="arch-box svc">
+            <div class="arch-title">LLM</div>
+            <div class="arch-tag">Groq · Llama 3.1 8B</div>
+            <div class="arch-desc">JSON-mode for structured artifacts</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       SLIDE 6 — TECH STACK
+       ========================================================= -->
+  <section class="slide" data-speaker="Justin">
+    <div class="slide-inner">
+      <div class="slide-header">
+        <span class="kicker">Tech Stack</span>
+        <h2>Why each piece</h2>
+      </div>
+      <div class="stack-grid">
+        <div class="stack-card">
+          <div class="stack-icon">⚡</div>
+          <h3>FastAPI</h3>
+          <p>Async by default, automatic /docs, built-in validation. Saved us hours of boilerplate.</p>
+        </div>
+        <div class="stack-card">
+          <div class="stack-icon">🔍</div>
+          <h3>ChromaDB</h3>
+          <p>Embedded vector DB — no separate server, persists to disk, simple add/query/delete API.</p>
+        </div>
+        <div class="stack-card">
+          <div class="stack-icon">🧠</div>
+          <h3>Sentence Transformers</h3>
+          <p>all-MiniLM-L6-v2: ~80 MB, runs on CPU, free. Good enough for a class corpus.</p>
+        </div>
+        <div class="stack-card">
+          <div class="stack-icon">🚀</div>
+          <h3>Groq · Llama 3.1 8B</h3>
+          <p>Free tier, blazing-fast inference, reliable JSON-mode for structured outputs.</p>
+        </div>
+        <div class="stack-card">
+          <div class="stack-icon">📄</div>
+          <h3>PyMuPDF (fitz)</h3>
+          <p>Faster and more reliable than pdfplumber/PyPDF2 for raw text extraction.</p>
+        </div>
+        <div class="stack-card">
+          <div class="stack-icon">🎨</div>
+          <h3>Streamlit</h3>
+          <p>Whole UI in Python. Built the working frontend in an afternoon — perfect for a demo.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       SLIDE 7 — CORE FEATURES (LAYER 1)
+       ========================================================= -->
+  <section class="slide" data-speaker="Krishna">
+    <div class="slide-inner">
+      <div class="slide-header">
+        <span class="kicker">Layer 1 · Core Platform</span>
+        <h2>Six capabilities, all required, all shipped</h2>
+      </div>
+      <div class="feature-grid">
+        <div class="feature">
+          <div class="f-num">01</div>
+          <h4>Corpus Ingestion</h4>
+          <p>5 file types: <code>.txt</code> · <code>.md</code> · <code>.pdf</code> · <code>.py</code> · <code>.js</code></p>
+        </div>
+        <div class="feature">
+          <div class="f-num">02</div>
+          <h4>Corpus Management</h4>
+          <p>Add, list, delete, and select active documents from the sidebar.</p>
+        </div>
+        <div class="feature">
+          <div class="f-num">03</div>
+          <h4>Retrieval-Grounded AI</h4>
+          <p>Chat, quiz, flashcards, and code review — all grounded in your files.</p>
+        </div>
+        <div class="feature">
+          <div class="f-num">04</div>
+          <h4>Prompt Steering</h4>
+          <p>Audience level &amp; tone parameters flow into every chat request.</p>
+        </div>
+        <div class="feature">
+          <div class="f-num">05</div>
+          <h4>Persistence</h4>
+          <p>ChromaDB on disk · generated quizzes &amp; flashcards saved as JSON artifacts.</p>
+        </div>
+        <div class="feature">
+          <div class="f-num">06</div>
+          <h4>Cost Observability</h4>
+          <p><code>/metrics/</code> exposes request count and total tokens used.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       SLIDE 8 — INGESTION PIPELINE
+       ========================================================= -->
+  <section class="slide" data-speaker="Krishna">
+    <div class="slide-inner">
+      <div class="slide-header">
+        <span class="kicker">Ingestion Deep-Dive</span>
+        <h2>From raw upload to searchable vectors</h2>
+      </div>
+      <div class="pipeline">
+        <div class="p-step">
+          <div class="p-icon">📥</div>
+          <div class="p-title">Upload</div>
+          <div class="p-body">10 MB cap · streamed in 1 MB chunks · type whitelist · sanitized filename</div>
+        </div>
+        <div class="p-line"></div>
+        <div class="p-step">
+          <div class="p-icon">📝</div>
+          <div class="p-title">Extract</div>
+          <div class="p-body">PyMuPDF for PDFs · UTF-8 read for text/code · scanned-image PDFs rejected</div>
+        </div>
+        <div class="p-line"></div>
+        <div class="p-step">
+          <div class="p-icon">✂️</div>
+          <div class="p-title">Chunk</div>
+          <div class="p-body">1000 chars · 200 overlap so sentences don't get cut at boundaries</div>
+        </div>
+        <div class="p-line"></div>
+        <div class="p-step">
+          <div class="p-icon">🔢</div>
+          <div class="p-title">Embed</div>
+          <div class="p-body">all-MiniLM-L6-v2 → 384-dim vector per chunk</div>
+        </div>
+        <div class="p-line"></div>
+        <div class="p-step">
+          <div class="p-icon">💾</div>
+          <div class="p-title">Store</div>
+          <div class="p-body">ChromaDB with <code>{filename, type}</code> metadata · re-upload replaces old chunks</div>
+        </div>
+      </div>
+      <div class="callout">
+        <strong>Why this matters:</strong> chunk size, overlap, and embedding model are the three
+        levers that make or break retrieval quality. We tuned each one deliberately.
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       SLIDE 9 — ENGINEERING DECISIONS
+       ========================================================= -->
+  <section class="slide" data-speaker="Justin">
+    <div class="slide-inner">
+      <div class="slide-header">
+        <span class="kicker">Engineering Decisions</span>
+        <h2>Trade-offs we actually made</h2>
+      </div>
+      <div class="decision-table">
+        <div class="d-row d-head">
+          <div>Decision</div>
+          <div>Alternatives</div>
+          <div>Why we picked it</div>
+        </div>
+        <div class="d-row">
+          <div><strong>Package layout</strong></div>
+          <div>Single 300-line <code>main.py</code></div>
+          <div>Split into <code>app/</code> with config / db / utils / routes — easier to navigate.</div>
+        </div>
+        <div class="d-row">
+          <div><strong>Chunking</strong></div>
+          <div>Sentence · paragraph · fixed</div>
+          <div>Fixed 1000/200 chars: simple, predictable, good enough for our corpus.</div>
+        </div>
+        <div class="d-row">
+          <div><strong>Embeddings</strong></div>
+          <div>OpenAI · larger ST models</div>
+          <div>MiniLM: free, CPU-friendly, &lt;100 MB. Quality good enough for the demo.</div>
+        </div>
+        <div class="d-row">
+          <div><strong>LLM hosting</strong></div>
+          <div>Local Ollama · OpenAI API</div>
+          <div>Groq: free tier, fastest inference, native JSON mode.</div>
+        </div>
+        <div class="d-row">
+          <div><strong>Frontend</strong></div>
+          <div>React · plain HTML</div>
+          <div>Streamlit: full UI in Python, no JSX, no state plumbing.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       SLIDE 10 — CHALLENGE B · PROMPT ENGINEERING
+       ========================================================= -->
+  <section class="slide" data-speaker="Piotr">
+    <div class="slide-inner">
+      <div class="slide-header">
+        <span class="kicker">Engineering Challenge B</span>
+        <h2>Prompt Engineering · controlling hallucinations</h2>
+      </div>
+      <div class="prompt-evolution">
+        <div class="prompt-step v1">
+          <div class="v-tag">v1 · naive</div>
+          <p>"Answer this question about the document."</p>
+          <div class="result fail">⚠️ Made up facts when context was thin · ignored audience setting</div>
+        </div>
+        <div class="prompt-step v2">
+          <div class="v-tag">v2 · constrained</div>
+          <p>"Use ONLY the provided context. If the answer is not there, say you don't know."</p>
+          <div class="result mid">✅ Stopped hallucinating · ❌ output format still inconsistent</div>
+        </div>
+        <div class="prompt-step v3">
+          <div class="v-tag">v3 · steered</div>
+          <p>System prompt now injects <code>audience_level</code> &amp; <code>tone</code>, low temperature (0.2), and JSON-mode for structured artifacts.</p>
+          <div class="result win">✅ Grounded · ✅ steerable · ✅ parseable JSON every time</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       SLIDE 11 — CHALLENGE D · RELIABILITY & SECURITY
+       ========================================================= -->
+  <section class="slide" data-speaker="Krishna">
+    <div class="slide-inner">
+      <div class="slide-header">
+        <span class="kicker">Engineering Challenge D</span>
+        <h2>Reliability &amp; Security · auditing our own code</h2>
+      </div>
+      <div class="two-col">
+        <div>
+          <h4 class="sub-h">We ran a brutal AI security audit on day 1</h4>
+          <ul class="check-list">
+            <li><strong>Path traversal</strong> blocked via <code>sanitize_filename</code></li>
+            <li><strong>DoS via huge uploads</strong> → 10 MB streaming cap</li>
+            <li><strong>Temp file leaks</strong> → guaranteed cleanup in <code>finally</code></li>
+            <li><strong>CORS wildcard</strong> → tightened to localhost by default</li>
+            <li><strong>Optional API key</strong> via <code>X-API-Key</code> header</li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="sub-h">Failure scenarios handled</h4>
+          <ul class="check-list">
+            <li>Empty / scanned-image PDFs → friendly 400</li>
+            <li>Duplicate uploads → replace old chunks, no doubles</li>
+            <li>Unsupported file type → rejected at upload</li>
+            <li>Missing context for chat → 404, no hallucination</li>
+            <li>LLM crash → caught, generic 500, secrets never leak</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       SLIDE 12 — AI COLLABORATION
+       ========================================================= -->
+  <section class="slide" data-speaker="Piotr">
+    <div class="slide-inner">
+      <div class="slide-header">
+        <span class="kicker">AI Collaboration</span>
+        <h2>How we worked <em>with</em> the AI, not around it</h2>
+      </div>
+      <div class="ai-workflow">
+        <div class="ai-card">
+          <div class="ai-num">1</div>
+          <h4>Audit before code</h4>
+          <p>First prompt to AI: "Be a security engineer, find vulnerabilities." Findings shaped the build.</p>
+        </div>
+        <div class="ai-card">
+          <div class="ai-num">2</div>
+          <h4>Ask before edit</h4>
+          <p>Concept questions in Ask mode → only then switch to Edit mode for code changes.</p>
+        </div>
+        <div class="ai-card">
+          <div class="ai-num">3</div>
+          <h4>Small prompts</h4>
+          <p>Frontend built in 6 incremental prompts, each tested before the next.</p>
+        </div>
+        <div class="ai-card">
+          <div class="ai-num">4</div>
+          <h4>Custom agents</h4>
+          <p>Journal logger, code explorer, light refactoring — all defined under <code>.github/agents/</code>.</p>
+        </div>
+      </div>
+      <div class="callout">
+        <strong>Tools used:</strong> GitHub Copilot (GPT-5 mini &amp; Codex) for code · Gemini for documentation · custom agents for repeatable workflows.
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       SLIDE 13 — WHEN AI WAS WRONG
+       ========================================================= -->
+  <section class="slide" data-speaker="Piotr">
+    <div class="slide-inner">
+      <div class="slide-header">
+        <span class="kicker">When the AI was wrong</span>
+        <h2>It's not magic — it needs review</h2>
+      </div>
+      <div class="wrong-grid">
+        <div class="wrong-card">
+          <div class="w-tag">Filesystem confusion</div>
+          <p>AI assumed log files were in <code>records/</code> after we moved them back to root. Wrote to the wrong directory.</p>
+          <div class="w-fix">Fix: explicitly stated current paths in the prompt.</div>
+        </div>
+        <div class="wrong-card">
+          <div class="w-tag">Wrong framework</div>
+          <p>Asked for an artifact endpoint — first response used Flask syntax instead of our FastAPI stack.</p>
+          <div class="w-fix">Fix: re-prompted with stack reminder; second pass was correct.</div>
+        </div>
+        <div class="wrong-card">
+          <div class="w-tag">Over-eager security</div>
+          <p>Audit suggested rate-limiting, prompt-injection sanitizing, full RBAC. Most weren't worth the scope.</p>
+          <div class="w-fix">Fix: filtered findings — fixed real risks, documented the rest.</div>
+        </div>
+        <div class="wrong-card">
+          <div class="w-tag">Duplicate journal entries</div>
+          <p>The hook logger sometimes wrote the same prompt twice — visible mess in the journal.</p>
+          <div class="w-fix">Fix: traced root cause to hook config, not code.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       SLIDE 14 — METRICS LIVE
+       ========================================================= -->
+  <section class="slide" data-speaker="Justin">
+    <div class="slide-inner">
+      <div class="slide-header">
+        <span class="kicker">Cost Observability</span>
+        <h2>Every LLM call is counted</h2>
+      </div>
+      <div class="metrics-row">
+        <div class="metric-card">
+          <div class="m-label">Endpoint</div>
+          <div class="m-value mono">GET /metrics/</div>
+        </div>
+        <div class="metric-card">
+          <div class="m-label">Tracked</div>
+          <div class="m-value">total_requests<br>total_tokens_used</div>
+        </div>
+        <div class="metric-card">
+          <div class="m-label">Surface</div>
+          <div class="m-value">Sidebar panel · auto-refresh after every action</div>
+        </div>
+      </div>
+      <div class="metric-snippet">
+<pre><code>{
+  "total_requests": 47,
+  "total_tokens_used": 18240
+}</code></pre>
+      </div>
+      <p class="footnote">In-memory counters reset on restart — a deliberate trade-off for demo simplicity, called out in the report.</p>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       SLIDE 15 — FAILURES & ITERATIONS
+       ========================================================= -->
+  <section class="slide" data-speaker="Krishna">
+    <div class="slide-inner">
+      <div class="slide-header">
+        <span class="kicker">Failures &amp; Iterations</span>
+        <h2>What we got wrong the first time</h2>
+      </div>
+      <div class="fail-list">
+        <div class="fail-row">
+          <div class="fail-num">F1</div>
+          <div>
+            <strong>Monolithic main.py</strong>
+            <p>Started as 300+ lines doing everything. Refactored into the <code>app/</code> package mid-project.</p>
+          </div>
+        </div>
+        <div class="fail-row">
+          <div class="fail-num">F2</div>
+          <div>
+            <strong>CORS wide open</strong>
+            <p>Started with <code>allow_origins=["*"]</code>. Tightened to localhost after the security review.</p>
+          </div>
+        </div>
+        <div class="fail-row">
+          <div class="fail-num">F3</div>
+          <div>
+            <strong>No upload limits</strong>
+            <p>A single 5 GB PDF could have crashed the server. Added 10 MB streaming cap.</p>
+          </div>
+        </div>
+        <div class="fail-row">
+          <div class="fail-num">F4</div>
+          <div>
+            <strong>Token cap by characters, not tokens</strong>
+            <p>24k char ceiling is a heuristic. Honest limitation — a real tokenizer would be tighter.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       SLIDE 16 — LESSONS LEARNED
+       ========================================================= -->
+  <section class="slide" data-speaker="Group">
+    <div class="slide-inner">
+      <div class="slide-header">
+        <span class="kicker">Lessons Learned</span>
+        <h2>What we'll take with us</h2>
+      </div>
+      <div class="lesson-grid">
+        <div class="lesson">
+          <div class="l-icon">🧩</div>
+          <h4>RAG is more about plumbing than magic</h4>
+          <p>Chunk size, overlap, and embedding choice matter way more than the LLM you pick.</p>
+        </div>
+        <div class="lesson">
+          <div class="l-icon">📐</div>
+          <h4>Structured outputs change everything</h4>
+          <p>JSON-mode + a schema in the prompt = reliable artifacts the frontend can actually use.</p>
+        </div>
+        <div class="lesson">
+          <div class="l-icon">🤝</div>
+          <h4>AI is a tutor, not a shortcut</h4>
+          <p>"Explain this first" produced better outcomes than "write this for me."</p>
+        </div>
+        <div class="lesson">
+          <div class="l-icon">🛡️</div>
+          <h4>Audit early, not at the end</h4>
+          <p>Security findings on day 1 became built-in defaults instead of last-minute patches.</p>
+        </div>
+        <div class="lesson">
+          <div class="l-icon">📦</div>
+          <h4>Small prompts beat big ones</h4>
+          <p>Six incremental prompts shipped a working frontend. One mega-prompt would not have.</p>
+        </div>
+        <div class="lesson">
+          <div class="l-icon">🔍</div>
+          <h4>Trust, but verify</h4>
+          <p>Every AI suggestion got reviewed. Several were good, some were wrong, none merged blindly.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       SLIDE 17 — Q&A
+       ========================================================= -->
+  <section class="slide slide-end" data-speaker="Group">
+    <div class="bg-grid"></div>
+    <div class="title-wrap">
+      <div class="eyebrow">Thank you · 5-minute Q&amp;A</div>
+      <h1 class="hero-title">Questions?</h1>
+      <p class="hero-sub">Corpus Forge · Justin · Krishna · Piotr</p>
+      <div class="title-divider"></div>
+      <div class="end-links">
+        <span class="repo-pill">github.com/JustinDCosta/capstone-corpus-forge</span>
+        <span class="repo-pill">EPITA · 2026</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       NAVIGATION & UI
+       ========================================================= -->
+  <div class="hud">
+    <button class="nav-btn" id="prevBtn" aria-label="Previous slide">‹</button>
+    <div class="slide-counter"><span id="cur">1</span> / <span id="total">17</span></div>
+    <button class="nav-btn" id="nextBtn" aria-label="Next slide">›</button>
+    <button class="nav-btn icon-btn" id="fullBtn" aria-label="Toggle fullscreen" title="Fullscreen">⛶</button>
+    <button class="nav-btn icon-btn" id="overviewBtn" aria-label="Slide overview" title="Overview">▦</button>
+  </div>
+
+  <div class="speaker-tag" id="speakerTag">Speaker: —</div>
+
+  <div class="overview-pane" id="overviewPane">
+    <div class="overview-grid" id="overviewGrid"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

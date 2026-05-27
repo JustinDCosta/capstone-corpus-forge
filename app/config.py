@@ -11,9 +11,6 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 # Optional: comma-separated list of allowed browser origins for CORS.
 ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "")
 
-# Optional: set this to require X-API-Key on every backend request.
-API_KEY = os.getenv("CORPUS_FORGE_API_KEY")
-
 if not GROQ_API_KEY:
     raise ValueError(
         "CRITICAL: GROQ_API_KEY is missing from the .env file. Server cannot start."

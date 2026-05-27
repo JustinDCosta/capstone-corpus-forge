@@ -1,0 +1,54 @@
+{
+  "quiz": [
+    {
+      "question": "What is Justin D'Costa's current location?",
+      "options": [
+        "37 Av. Berlioz, Sevran, France",
+        "Paris, France",
+        "Dhaka, Bangladesh",
+        "Chambéry, France"
+      ],
+      "correct_answer": "37 Av. Berlioz, Sevran, France"
+    },
+    {
+      "question": "What is Justin D'Costa's profession?",
+      "options": [
+        "Freelance Video Editor",
+        "Private Tutor",
+        "Delivery Courier",
+        "Full-stack Developer and IT Specialist"
+      ],
+      "correct_answer": "Full-stack Developer and IT Specialist"
+    },
+    {
+      "question": "What is the name of Justin D'Costa's French learning companion application?",
+      "options": [
+        "Frenmot",
+        "Kaj - Task Reminder",
+        "Atmoxis",
+        "ScreenDusk"
+      ],
+      "correct_answer": "Frenmot"
+    },
+    {
+      "question": "What is the name of the university where Justin D'Costa earned his French Diploma (DUEF)?",
+      "options": [
+        "EPITA",
+        "Université Savoie Mont Blanc",
+        "Academia",
+        "Stuart"
+      ],
+      "correct_answer": "Université Savoie Mont Blanc"
+    },
+    {
+      "question": "What is the name of the programming language in which Justin D'Costa built the 3D Decision Maker tool?",
+      "options": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "Python"
+      ],
+      "correct_answer": "HTML"
+    }
+  ]
+}

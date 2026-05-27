@@ -1,4 +1,4 @@
-from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Depends, Header
+from fastapi import APIRouter, UploadFile, File, Form, HTTPException
 from typing import Optional
 import hashlib
 import logging
@@ -7,21 +7,12 @@ import os
 import json
 import re
 from pathlib import Path
-from .config import groq_client, MAX_UPLOAD_BYTES, API_KEY
+from .config import groq_client, MAX_UPLOAD_BYTES
 from .db import collection
 from .utils import extract_text_from_file, chunk_text, get_document_context
 
 logger = logging.getLogger(__name__)
 SAFE_FILENAME_RE = re.compile(r"[^A-Za-z0-9._-]")
-
-
-def require_api_key(x_api_key: str | None = Header(default=None)) -> None:
-    # If no API key is configured, we allow requests (local dev default).
-    if not API_KEY:
-        return
-    # When a key is set, clients must send X-API-Key.
-    if x_api_key != API_KEY:
-        raise HTTPException(status_code=401, detail="Unauthorized")
 
 
 def sanitize_filename(name: str) -> str:
@@ -43,8 +34,9 @@ def build_artifact_filename(filename_base: str, kind: str) -> str:
     return f"{safe_base}_{digest}{suffix}"
 
 
-# Apply API key protection to every route in this file.
-router = APIRouter(dependencies=[Depends(require_api_key)])
+# Single router for all endpoints. No auth dependency: this is a local
+# capstone app, so we keep the surface simple.
+router = APIRouter()
 
 
 # Simple in-memory counters (reset on server restart).
@@ -76,6 +68,8 @@ def save_artifact(filename_base: str, data_obj, kind: str) -> str:
     return safe_name
 
 
+# Public health endpoint so launchers and load balancers can verify the
+# server is up.
 @router.get("/ping")
 def ping():
     return {"status": "Corpus Forge Engine is online and ready."}

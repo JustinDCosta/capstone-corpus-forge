@@ -1,25 +1,14 @@
-import os
-from dotenv import load_dotenv
 import streamlit as st
 import httpx
 
-# Load .env so CORPUS_FORGE_API_KEY is available for local dev.
-load_dotenv()
-
 # Backend base URL. Streamlit calls these endpoints over HTTP.
 BACKEND_URL = "http://127.0.0.1:8000"
-
-# Optional API key for backend auth. If not set, we skip the header.
-API_KEY = os.getenv("CORPUS_FORGE_API_KEY")
-AUTH_HEADERS = {"X-API-Key": API_KEY} if API_KEY else {}
 
 
 def fetch_documents() -> list[str]:
     """Fetch the current document list from the FastAPI backend."""
     try:
-        response = httpx.get(
-            f"{BACKEND_URL}/documents/", timeout=10.0, headers=AUTH_HEADERS
-        )
+        response = httpx.get(f"{BACKEND_URL}/documents/", timeout=10.0)
         response.raise_for_status()
         payload = response.json()
         documents = payload.get("documents", [])
@@ -32,9 +21,7 @@ def fetch_documents() -> list[str]:
 def fetch_metrics() -> dict:
     """Fetch global backend metrics."""
     try:
-        response = httpx.get(
-            f"{BACKEND_URL}/metrics/", timeout=10.0, headers=AUTH_HEADERS
-        )
+        response = httpx.get(f"{BACKEND_URL}/metrics/", timeout=10.0)
         response.raise_for_status()
         payload = response.json()
         return {
@@ -49,9 +36,7 @@ def fetch_metrics() -> dict:
 def fetch_artifacts_list() -> list[str]:
     """Fetch the list of saved artifact filenames from the backend."""
     try:
-        response = httpx.get(
-            f"{BACKEND_URL}/artifacts/", timeout=10.0, headers=AUTH_HEADERS
-        )
+        response = httpx.get(f"{BACKEND_URL}/artifacts/", timeout=10.0)
         response.raise_for_status()
         payload = response.json()
         return payload.get("artifacts", []) if isinstance(payload, dict) else []
@@ -64,9 +49,7 @@ def fetch_artifact_content(artifact_name: str):
     """Fetch the JSON content of a saved artifact."""
     try:
         response = httpx.get(
-            f"{BACKEND_URL}/artifacts/{artifact_name}",
-            timeout=10.0,
-            headers=AUTH_HEADERS,
+            f"{BACKEND_URL}/artifacts/{artifact_name}", timeout=10.0
         )
         response.raise_for_status()
         return response.json()
@@ -86,10 +69,7 @@ def upload_document(uploaded_file) -> None:
             )
         }
         response = httpx.post(
-            f"{BACKEND_URL}/upload/",
-            files=files,
-            timeout=60.0,
-            headers=AUTH_HEADERS,
+            f"{BACKEND_URL}/upload/", files=files, timeout=60.0
         )
         response.raise_for_status()
         payload = response.json()
@@ -102,7 +82,6 @@ def upload_document(uploaded_file) -> None:
 def render_sidebar() -> None:
     """Render the document management sidebar."""
     st.sidebar.title("Document Management")
-    st.sidebar.caption(f"Backend: {BACKEND_URL}")
 
     st.sidebar.subheader("Upload document")
     uploaded_file = st.sidebar.file_uploader(
@@ -141,7 +120,6 @@ def render_sidebar() -> None:
                     resp = httpx.delete(
                         f"{BACKEND_URL}/documents/{document_name}",
                         timeout=30.0,
-                        headers=AUTH_HEADERS,
                     )
                     resp.raise_for_status()
                     st.sidebar.success(resp.json().get("message", "Deleted."))
@@ -224,7 +202,6 @@ def render_chat_tab() -> None:
                 f"{BACKEND_URL}/chat/",
                 data=data,
                 timeout=120.0,
-                headers=AUTH_HEADERS,
             )
             response.raise_for_status()
             payload = response.json()
@@ -257,7 +234,6 @@ def render_quiz_tab() -> None:
                     f"{BACKEND_URL}/generate/quiz/",
                     data={"filename": filename},
                     timeout=120.0,
-                    headers=AUTH_HEADERS,
                 )
                 resp.raise_for_status()
                 quiz_obj = resp.json()
@@ -285,7 +261,6 @@ def render_flashcards_tab() -> None:
                     f"{BACKEND_URL}/generate/flashcards/",
                     data={"filename": filename},
                     timeout=120.0,
-                    headers=AUTH_HEADERS,
                 )
                 resp.raise_for_status()
                 cards_obj = resp.json()
@@ -320,7 +295,6 @@ def render_code_review_tab() -> None:
                     f"{BACKEND_URL}/generate/code-review/",
                     data={"filename": filename},
                     timeout=120.0,
-                    headers=AUTH_HEADERS,
                 )
                 resp.raise_for_status()
                 body = resp.json()

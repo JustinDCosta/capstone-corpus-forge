@@ -1,4 +1,3 @@
-import os
 import fitz  # PyMuPDF
 from fastapi import HTTPException
 from .db import collection

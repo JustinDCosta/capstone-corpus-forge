@@ -22,7 +22,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Import and register routes (uses APIRouter to avoid circular imports)
+# Import and register routes (uses APIRouter to avoid circular imports).
 from .routes import router
 
 app.include_router(router)

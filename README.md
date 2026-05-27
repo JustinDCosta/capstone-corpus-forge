@@ -106,10 +106,7 @@ capstone-corpus-forge-main/
 
    ```
    GROQ_API_KEY=your_key_here
-   
-   # Optional: require an API key on every backend request
-   CORPUS_FORGE_API_KEY=your_optional_key_here
-    
+
    # Optional: restrict browser origins for CORS (comma-separated)
    ALLOWED_ORIGINS=http://localhost:8501,http://127.0.0.1:8501
    ```
@@ -159,8 +156,6 @@ This opens the Streamlit UI in your browser (usually at `http://localhost:8501`)
 | POST   | `/generate/flashcards/`       | Generate flashcards (field: `filename`)   |
 | POST   | `/generate/code-review/`      | Generate a code review (field: `filename`)|
 | DELETE | `/documents/{filename}`       | Delete a document and all its chunks      |
-
-If `CORPUS_FORGE_API_KEY` is set, include `X-API-Key: <your_key>` on every request.
 
 ---
 
