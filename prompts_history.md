@@ -138,3 +138,6 @@
 ### 27-05-2026 16:56
 - **Prompt**: create architecture graph and put it in  a folder called docs.
 
+### 27-05-2026 17:34
+- **Prompt**: use the code explorer and put the output in the docs folder
+

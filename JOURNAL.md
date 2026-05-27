@@ -393,3 +393,19 @@ Update Readme.md to be in synce with the changes made. Also add/edit instruction
 - **Hook Version**: 1.02
 - **Date**: 27-05-2026 16:56
 - **Prompt**: create architecture graph and put it in  a folder called docs.
+
+### **New Interaction**
+- **Agent Version**: 2.3
+- **Date**: 27-05-2026 16:57
+- **User**: justin.d-costa@epita.fr
+- **Prompt**: create architecture graph and put it in  a folder called docs.
+- **CoPilot Mode**: Edit
+- **CoPilot Model**: GPT-5.4 mini
+- **Socratic Mode**: ON
+- **Changes Made**: Created `docs/architecture.md` and `docs/architecture.html` with Mermaid diagrams for module dependencies, runtime flow, function calls, and the main launch/upload/chat sequence.
+- **Context and Reasons for Changes**: Added the requested architecture documentation in a dedicated `docs/` folder and kept the Markdown and HTML versions aligned for quick viewing.
+
+### **New Interaction**
+- **Hook Version**: 1.02
+- **Date**: 27-05-2026 17:34
+- **Prompt**: use the code explorer and put the output in the docs folder
