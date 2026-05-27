@@ -388,3 +388,8 @@ Update Readme.md to be in synce with the changes made. Also add/edit instruction
 - **Changes Made**: Updated README.md with start.py usage, optional API key/CORS config, and project structure updates.
 - **Context and Reasons for Changes**: Align documentation with current security and startup workflow.
 
+
+### **New Interaction**
+- **Hook Version**: 1.02
+- **Date**: 27-05-2026 16:56
+- **Prompt**: create architecture graph and put it in  a folder called docs.

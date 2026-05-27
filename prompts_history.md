@@ -135,3 +135,6 @@
 ### 24-05-2026 23:19
 - **Prompt**: Do a re-analysis of the files and changes made. Update Readme.md to be in synce with the changes made. Also add/edit instruction for running the start.py.
 
+### 27-05-2026 16:56
+- **Prompt**: create architecture graph and put it in  a folder called docs.
+
