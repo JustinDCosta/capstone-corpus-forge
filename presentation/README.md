@@ -49,16 +49,15 @@ directly in the HTML.
 | 7  | Core Features (Layer 1)        | Krishna  |
 | 8  | Ingestion Pipeline             | Krishna  |
 | 9  | Engineering Decisions          | Justin   |
-| 10 | Challenge B — Prompt Engineering | Piotr  |
-| 11 | Challenge D — Reliability      | Krishna  |
-| 12 | AI Collaboration               | Piotr    |
-| 13 | When AI Was Wrong              | Piotr    |
-| 14 | Cost Observability             | Justin   |
-| 15 | Failures & Iterations          | Krishna  |
-| 16 | Lessons Learned                | Group    |
-| 17 | Q&A / Thank You                | Group    |
+| 10 | Challenge D — Reliability      | Krishna  |
+| 11 | AI Collaboration               | Piotr    |
+| 12 | When AI Was Wrong              | Piotr    |
+| 13 | Cost Observability             | Justin   |
+| 14 | Failures & Iterations          | Krishna  |
+| 15 | Lessons Learned                | Group    |
+| 16 | Q&A / Thank You                | Group    |
 
-Total ≈ 17 slides for a 12-minute group presentation +
+Total ≈ 16 slides for a 12-minute group presentation +
 3-minute demo + 5-minute Q&A (matches the brief's 20-minute slot).
 
 ## Adding images
