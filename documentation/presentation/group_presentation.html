@@ -135,12 +135,12 @@
             <div class="arch-desc">Upload · Chat · Quiz · Flashcards · Review · Artifacts</div>
           </div>
         </div>
-        <div class="arch-arrow-down">↓ HTTP + optional X-API-Key</div>
+        <div class="arch-arrow-down">↓ HTTP (localhost)</div>
         <div class="arch-layer">
           <div class="arch-box api">
             <div class="arch-title">Backend API</div>
             <div class="arch-tag">FastAPI · Uvicorn</div>
-            <div class="arch-desc">Routes · Validation · Metrics · Auth</div>
+            <div class="arch-desc">Routes · Validation · Metrics · CORS</div>
           </div>
         </div>
         <div class="arch-layer arch-split">
@@ -389,7 +389,7 @@
             <li><strong>DoS via huge uploads</strong> → 10 MB streaming cap</li>
             <li><strong>Temp file leaks</strong> → guaranteed cleanup in <code>finally</code></li>
             <li><strong>CORS wildcard</strong> → tightened to localhost by default</li>
-            <li><strong>Optional API key</strong> via <code>X-API-Key</code> header</li>
+            <li><strong>Generic error responses</strong> → no stack traces leaked</li>
           </ul>
         </div>
         <div>

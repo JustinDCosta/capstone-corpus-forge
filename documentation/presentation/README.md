@@ -41,8 +41,8 @@ directly in the HTML.
 | #  | Slide                          | Speaker  |
 |----|--------------------------------|----------|
 | 1  | Title                          | Group    |
-| 2  | Agenda                         | Justin   |
-| 3  | Mission                        | Justin   |
+| 2  | Agenda                         | Piotr    |
+| 3  | Mission                        | Piotr    |
 | 4  | Live Demo (3 min)              | Group    |
 | 5  | Architecture                   | Justin   |
 | 6  | Tech Stack                     | Justin   |
