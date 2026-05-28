@@ -1,0 +1,4 @@
+[server]
+# Match the backend's MAX_UPLOAD_BYTES (10 MB) so the uploader caption
+# in the sidebar reads "Limit 10MB per file" instead of the default 200 MB.
+maxUploadSize = 10
